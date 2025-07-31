@@ -1,0 +1,12 @@
+*{
+    margin: 0%;
+    padding: 0%;
+    
+}
+.Main-Profile h1{
+    color: red
+}
+.Image-img img{
+    width: 400px;
+    height: auto;
+}
