@@ -1,7 +1,12 @@
 *{
     margin: 0%;
     padding: 0%;
-    
+   
+}
+.body{
+
+    justify-content: center;
+    align-items: center;
 }
 .Main-Profile h1{
     color: red
