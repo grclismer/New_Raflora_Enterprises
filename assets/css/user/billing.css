@@ -53,7 +53,7 @@ body {
 }
 
 .billing-address {
-    margin-top: 12px;
+    margin-top: 6px;
     background: #f8f9fa;
     padding: 16px;
     border-radius: 8px;
@@ -67,7 +67,7 @@ body {
 
 .billing-address strong {
     font-weight: 600;
-    margin-bottom: 4px;
+    /* margin-bottom: 4px; */
     color: #444;
 }
 

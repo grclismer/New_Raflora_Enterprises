@@ -279,7 +279,7 @@ $fileUrl = (strpos($designPath, 'default') !== false) ? null : '../' . $designPa
         <h1 style="font-size:28px; font-weight:800; margin-bottom:12px;">Thank you for your purchase!</h1>
         <h3 style="font-size:18px; margin-top:18px;">Billing address</h3>
 
-        <div class="billing-address" style="margin-top:12px;">
+        <div class="billing-address" style="margin-top:0px;">
             <p><strong>Name</strong><?php echo htmlspecialchars($booking['full_name']); ?></p>
             <p><strong>Address</strong><?php echo htmlspecialchars($booking['address']); ?></p>
             <p><strong>Phone</strong><?php echo htmlspecialchars($booking['mobile_number']); ?></p>
@@ -315,9 +315,9 @@ $fileUrl = (strpos($designPath, 'default') !== false) ? null : '../' . $designPa
                 <div class="status-indicator" style="margin-top:25px; margin-bottom:25px; width:90%; background:#d4edda; border-color:#c3e6cb; color:#155724;">✅ Status: Booking Approved! Your event is confirmed.</div>
 
             <?php elseif ($booking['booking_status'] == 'REJECTED'): ?>
-                <div class="status-indicator" style="margin-top:25px; margin-bottom:25px; width:40%; background:#f8d7da; border-color:#f5c6cb; color:#721c24;">❌ Status: Booking Rejected
+                <div class="status-indicator" style="margin-top:0px; margin-bottom:5px; width:40%; background:#f8d7da; border-color:#f5c6cb; color:#721c24;">❌ Status: Booking Rejected
                     <?php if (!empty($booking['rejection_reason'])): ?>
-                        <a href="../user/my_bookings.php" class="View-book-btn"style="margin-top: 12px; margin-left:38px; width:130px; height:70px; font-size:17px;  " >View My Bookings</a>
+                        <a href="../user/my_bookings.php" class="View-book-btn"style="margin-top: 12px; margin-left:38px; width:130px; height:50px; font-size:12px;  " >View My Bookings</a>
                         <div style="margin-top:12px;"><strong>Reason:</strong> <?php echo htmlspecialchars($booking['rejection_reason']); ?></div>
                     <?php endif; ?>
                 </div>
