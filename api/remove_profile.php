@@ -1,12 +1,6 @@
 <?php
-
-// =======================================================================
-// PHP SCRIPT START - TIMEZONE CORRECTION
-// =======================================================================
-
-// Example: Set the timezone to Manila (Philippines Standard Time)
+// api/remove_profile.php
 date_default_timezone_set('Asia/Manila');
-
 session_start();
 header('Content-Type: application/json');
 
@@ -16,17 +10,21 @@ $username = "root";
 $password = "";
 $dbname = "raflora_enterprises";
 
-// Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);
 
-// Check connection
 if ($conn->connect_error) {
     error_log("Database connection failed: " . $conn->connect_error);
     echo json_encode(['status' => 'error', 'message' => 'Database connection failed']);
     exit;
 }
 
-$userId = $_SESSION['user_id'] ?? 7;
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+    echo json_encode(['status' => 'error', 'message' => 'User not logged in']);
+    exit;
+}
+
+$userId = $_SESSION['user_id'];
 $deletedFile = false;
 
 try {
@@ -95,7 +93,7 @@ try {
     $stmt->close();
     
 } catch (Exception $e) {
-    error_log("Exception in remove_profile_picture.php for user $userId: " . $e->getMessage());
+    error_log("Exception in remove_profile.php for user $userId: " . $e->getMessage());
     echo json_encode([
         'status' => 'error',
         'message' => 'An unexpected error occurred'

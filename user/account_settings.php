@@ -6,7 +6,6 @@ error_log("Account Settings - Session: " . print_r($_SESSION, true));
 
 // If user is not logged in, redirect to login
 if (!isset($_SESSION['user_id'])) {
-    // Try to get user_id from cookie as fallback
     if (isset($_COOKIE['user_id'])) {
         $_SESSION['user_id'] = $_COOKIE['user_id'];
         $_SESSION['username'] = $_COOKIE['username'] ?? '';
@@ -34,6 +33,8 @@ if (!$conn->connect_error) {
     
     if ($result->num_rows == 1) {
         $user_data = $result->fetch_assoc();
+        // Combine first and last name for full name display
+        $user_data['full_name'] = trim($user_data['first_name'] . ' ' . $user_data['last_name']);
     }
     $stmt->close();
     $conn->close();
@@ -85,150 +86,207 @@ if (isset($_SESSION['error'])) {
         <?php endif; ?>
 
         <!-- Profile Picture Upload -->
-        <div class="profile-picture-section">
-            <div class="profile-container">
-                <div class="profile-image-container" onclick="viewProfileImage()">
-                    <i id="avatarIcon" class="fas fa-user profile-placeholder-icon <?php echo !empty($user_data['profile_picture']) ? 'hidden' : ''; ?>"></i>
-                    <img id="profileImage" src="<?php echo !empty($user_data['profile_picture']) ? '../' . $user_data['profile_picture'] : ''; ?>" alt="Profile" class="profile-image <?php echo empty($user_data['profile_picture']) ? 'hidden' : ''; ?>">
-                    <div id="profileMenu" class="profile-menu <?php echo empty($user_data['profile_picture']) ? 'hidden' : ''; ?>">
-                        <button type="button" onclick="event.stopPropagation(); toggleProfileMenu()" class="profile-menu-button">
-                            <i class="fas fa-ellipsis-h"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <div id="profileDropdown" class="profile-dropdown hidden">
-                    <button type="button" onclick="document.getElementById('profile-upload').click()" class="profile-dropdown-item">
-                        <i class="fas fa-camera profile-dropdown-icon profile-dropdown-icon-change"></i>
-                        Change Photo
-                    </button>
-                    <button type="button" onclick="removeProfilePicture()" class="profile-dropdown-item">
-                        <i class="fas fa-trash profile-dropdown-icon profile-dropdown-icon-remove"></i>
-                        Remove Photo
-                    </button>
-                </div>
-            </div>
-            <input type="file" id="profile-upload" class="profile-upload-input" accept="image/*" onchange="previewImage(event)">
-        </div>
-
-        <!-- START FORM HERE -->
-        <form id="settingsForm" method="POST" action="update_account.php">
-            <input type="hidden" name="user_id" value="<?php echo $user_data['user_id']; ?>">
+<div class="profile-picture-section">
+    <div class="profile-container">
+        <div class="profile-image-container" onclick="handleProfileImageClick()">
+            <i id="avatarIcon" class="fas fa-user profile-placeholder-icon <?php echo !empty($user_data['profile_picture']) ? 'hidden' : ''; ?>"></i>
+            <img id="profileImage" src="<?php echo !empty($user_data['profile_picture']) ? '../' . $user_data['profile_picture'] : ''; ?>" alt="Profile" class="profile-image <?php echo empty($user_data['profile_picture']) ? 'hidden' : ''; ?>">
             
-            <!-- User ID and Username Display -->
-            <div class="form-grid">
-                <div class="form-group form-group-icon">
-                    <input type="text" value="User ID: <?php echo $user_data['user_id'] ?? 'Loading...'; ?>" readonly
-                           class="form-input readonly-input">
-                    <i class="fa fa-id-card-clip form-icon"></i>
-                </div>
-                <div class="form-group form-group-icon">
-                    <input type="text" placeholder="Username" value="<?php echo $user_data['user_name'] ?? 'Loading...'; ?>" readonly
-                           class="form-input readonly-input">
-                    <i class="fa fa-user form-icon"></i>
-                </div>
+            <!-- Only show 3-dot menu when there's an image -->
+            <?php if (!empty($user_data['profile_picture'])): ?>
+            <div class="profile-menu">
+                <button type="button" onclick="event.stopPropagation(); toggleProfileMenu()" class="profile-menu-button">
+                    <i class="fas fa-ellipsis-h"></i>
+                </button>
             </div>
+            <?php endif; ?>
             
-            <!-- First Name and Last Name Group -->
-            <div class="form-grid">
-                <div class="form-group form-group-icon">
-                    <input type="text" id="reg-firstname" name="firstname" placeholder="First Name" maxlength="50" required 
-                           value="<?php echo htmlspecialchars($user_data['first_name'] ?? ''); ?>"
-                           class="form-input">
-                    <i class="fa-solid fa-signature form-icon"></i>
-                </div>
-                <div class="form-group form-group-icon">
-                    <input type="text" id="reg-lastname" name="lastname" placeholder="Last Name" maxlength="50" required 
-                           value="<?php echo htmlspecialchars($user_data['last_name'] ?? ''); ?>"
-                           class="form-input">
-                    <i class="fa-solid fa-signature form-icon"></i>
-                </div>
-            </div>
-
-            <!-- Email and Contact Number Group -->
-            <div class="form-grid">
-                <div class="form-group form-group-icon">
-                    <input type="email" id="reg-email" name="email" placeholder="Email" value="<?php echo htmlspecialchars($user_data['email'] ?? ''); ?>" required
-                           class="form-input">
-                    <i class="fa fa-envelope form-icon"></i>
-                </div>
-                <div class="form-group form-group-icon">
-                    <input type="tel" id="reg-phone" name="phone" placeholder="Contact Number (e.g., 900-123-4567)" maxlength="15" 
-                           value="<?php echo htmlspecialchars($user_data['mobile_number'] ?? ''); ?>"
-                           class="form-input">
-                    <i class="fa-solid fa-phone form-icon"></i>
-                </div>
-            </div>
-            
-            <div class="form-group form-group-icon address-group">
-                <input type="text" id="reg-address" name="address" placeholder="Address (Optional)" maxlength="255"
-                        value="<?php echo htmlspecialchars($user_data['address'] ?? ''); ?>"
-                        class="form-input">
-                <i class="fa-solid fa-map-location-dot form-icon"></i>
-            </div>
-            
-            <!-- Security Section -->
-            <div class="section-title security-title">Security</div>
-            
-            <!-- Change Password Section -->
-            <div class="password-section">
-                <h4 class="password-title">Change Password (Leave blank if not changing):</h4>
-                <div class="password-group">
-                    <div class="form-group form-group-icon">
-                        <input type="password" id="current-password" name="current_password" placeholder="Current Password" class="form-input">
-                        <i class="fa fa-lock form-icon"></i>
-                    </div>
-                    <div class="form-group form-group-icon">
-                        <input type="password" id="new-password" name="new_password" placeholder="New Password" class="form-input">
-                        <i class="fa fa-lock form-icon"></i>
-                    </div>
-                    <div class="form-group form-group-icon">
-                        <input type="password" id="confirm-new-password" name="confirm_new_password" placeholder="Confirm New Password" class="form-input">
-                        <i class="fa fa-lock form-icon"></i>
-                    </div>
-                </div>
-            </div>
-            
-            <button type="submit" class="save-btn">
-                <i class="fa-solid fa-floppy-disk"></i> Save Changes
-            </button>
-        </form>
-
-        <!-- QR Code Login Section -->
-        <div class="section-title qr-title">QR Code Login</div>
-        <div class="qr-section">
-            <div class="qr-content">
-                <span class="qr-title">Your Login QR Code</span>
-                <p class="qr-description">Use this QR code to log in quickly. Save it to your phone and scan it on the login page.</p>
-                
-                <!-- QR Code Display -->
-                <div class="qr-code-container">
-                    <div class="qr-code-display">
-                        <img id="qrCodeImage" 
-                             src="../api/get_user_qr.php?user_id=<?php echo $user_data['user_id']; ?>" 
-                             alt="Your Login QR Code" 
-                             class="qr-image">
-                    </div>
-                    
-                    <!-- Download Button -->
-                    <button onclick="downloadQRCode()" class="download-qr-btn">
-                        <i class="fas fa-download"></i> Save QR Code
-                    </button>
-                </div>
+            <!-- Upload hint overlay for when no image exists -->
+            <div id="uploadOverlay" class="upload-overlay <?php echo !empty($user_data['profile_picture']) ? 'hidden' : ''; ?>">
+                <i class="fas fa-camera"></i>
+                <span>Click to Upload Photo</span>
             </div>
         </div>
         
-        <!-- Danger Zone -->
-        <div class="section-title danger-title">Deactivate account</div>
-        <!-- Delete Account -->
-        <div class="delete-section">
-            <div class="delete-content">
-                <span class="delete-title">Delete Account</span>
-                <p class="delete-description">Permanently remove your account.</p>
-            </div>
-            <button onclick="handleDelete()" class="delete-btn">
-                Delete
+        <!-- Dropdown menu (only for when image exists) -->
+        <?php if (!empty($user_data['profile_picture'])): ?>
+        <div id="profileDropdown" class="profile-dropdown hidden">
+            <button type="button" onclick="document.getElementById('profile-upload').click()" class="profile-dropdown-item">
+                <i class="fas fa-camera profile-dropdown-icon profile-dropdown-icon-change"></i>
+                Change Photo
             </button>
+            <button type="button" onclick="removeProfilePicture()" class="profile-dropdown-item">
+                <i class="fas fa-trash profile-dropdown-icon profile-dropdown-icon-remove"></i>
+                Remove Photo
+            </button>
+        </div>
+        <?php endif; ?>
+    </div>
+    <!-- File input -->
+    <input type="file" id="profile-upload" class="profile-upload-input" accept="image/*" onchange="uploadProfilePicture(event)">
+</div>
+
+        <!-- Landscape Layout Container -->
+        <div class="landscape-layout">
+            <!-- Left Column -->
+            <div class="left-column">
+                <!-- User Info Section (visible by default) -->
+                <!-- User Info Section -->
+<div id="userInfoSection">
+    <form id="settingsForm" method="POST" action="update_account.php">
+        <input type="hidden" name="user_id" value="<?php echo $user_data['user_id']; ?>">
+        
+        <!-- Username and Full Name Group -->
+        <div class="form-grid">
+            <div class="form-group form-group-icon">
+                <input type="text" placeholder="Username" name="username" value="<?php echo $user_data['user_name'] ?? 'Loading...'; ?>" 
+                       class="form-input" required autocomplete="username">
+                <i class="fa fa-user form-icon"></i>
+            </div>
+            <div class="form-group form-group-icon">
+                <input type="text" id="fullname" name="fullname" placeholder="Full Name" maxlength="50" required 
+                       value="<?php echo htmlspecialchars($user_data['full_name'] ?? ''); ?>"
+                       class="form-input" autocomplete="name">
+                <i class="fa-solid fa-signature form-icon"></i>
+            </div>
+        </div>
+
+        <!-- Email and Contact Number Group -->
+        <div class="form-grid">
+            <div class="form-group form-group-icon">
+                <input type="email" id="reg-email" name="email" placeholder="Email" value="<?php echo htmlspecialchars($user_data['email'] ?? ''); ?>" required
+                       class="form-input" autocomplete="email">
+                <i class="fa fa-envelope form-icon"></i>
+            </div>
+            <div class="form-group form-group-icon">
+    <input type="tel" id="reg-phone" name="phone" placeholder="Contact Number" 
+           pattern="[0-9]{11}" title="Please enter exactly 11 digits (e.g., 09123456789)"
+           maxlength="11" 
+           value="<?php echo htmlspecialchars($user_data['mobile_number'] ?? ''); ?>"
+           class="form-input" autocomplete="tel" oninput="validatePhoneNumber(this)">
+    <i class="fa-solid fa-phone form-icon"></i>
+</div>
+        </div>
+        
+        <div class="form-group form-group-icon address-group">
+            <input type="text" id="reg-address" name="address" placeholder="Address (Optional)" maxlength="50"
+                    value="<?php echo htmlspecialchars($user_data['address'] ?? ''); ?>"
+                    class="form-input" autocomplete="street-address">
+            <i class="fa-solid fa-map-location-dot form-icon"></i>
+        </div>
+
+        <!-- Save Button -->
+        <button type="submit" class="save-btn">
+            <i class="fa-solid fa-floppy-disk"></i> Save Changes
+        </button>
+    </form>
+</div>
+
+<!-- Password Section (hidden by default) -->
+<div id="passwordSection" class="hidden">
+    <form id="passwordForm" method="POST" action="update_password_only.php">
+        <input type="hidden" name="user_id" value="<?php echo $user_data['user_id']; ?>">
+        
+        <h3 class="section-title">Change Password</h3>
+        
+        <div class="password-group">
+            <div class="form-group form-group-icon">
+                <input type="password" id="current-password" name="current_password" placeholder="Current Password" 
+                       class="form-input" required autocomplete="current-password">
+                <i class="fa fa-lock form-icon"></i>
+            </div>
+            <div class="form-group form-group-icon">
+                <input type="password" id="new-password" name="new_password" placeholder="New Password" 
+                       class="form-input" required autocomplete="new-password">
+                <i class="fa fa-lock form-icon"></i>
+            </div>
+            <div class="form-group form-group-icon">
+                <input type="password" id="confirm-new-password" name="confirm_password" placeholder="Confirm New Password" 
+                       class="form-input" required autocomplete="new-password">
+                <i class="fa fa-lock form-icon"></i>
+            </div>
+            
+            <!-- Show Password Toggle -->
+            <div class="show-password-toggle">
+                <input type="checkbox" id="showPasswordToggle">
+                <label for="showPasswordToggle">
+                    <i class="fas fa-eye"></i> Show Passwords
+                </label>
+            </div>
+        </div>
+        
+        <div class="password-actions">
+            <button type="submit" class="save-btn">
+                <i class="fa-solid fa-key"></i> Update Password
+            </button>
+        </div>
+    </form>
+</div>
+
+                <!-- QR Code Section (hidden by default) -->
+                <div id="qrCodeSection" class="hidden">
+                    <h3 class="section-title">QR Code Login</h3>
+                    
+                    <div class="qr-content">
+                        <p class="qr-description">Use this QR code to log in quickly. Save it to your phone and scan it on the login page.</p>
+                        
+                        <!-- QR Code Display -->
+                        <div class="qr-code-container">
+                            <div class="qr-code-display">
+                                <img id="qrCodeImage" 
+                                     src="../api/get_user_qr.php?user_id=<?php echo $user_data['user_id']; ?>" 
+                                     alt="Your Login QR Code" 
+                                     class="qr-image">
+                            </div>
+                            
+                            <!-- Download Button -->
+                            <button onclick="downloadQRCode()" class="download-qr-btn">
+                                <i class="fas fa-download"></i> Save QR Code
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="right-column">
+                <!-- Security Section -->
+                <div class="section-title security-title">Security</div>
+                
+                <!-- Change Password Button -->
+                <div class="toggle-section">
+                    <div class="toggle-header">
+                        <h4 class="toggle-title">Change Password</h4>
+                        <button type="button" id="togglePasswordBtn" class="toggle-btn">
+                            <i class="fas fa-edit"></i> Change Password
+                        </button>
+                    </div>
+                    <p class="toggle-description">Update your account password for enhanced security.</p>
+                </div>
+                
+                <!-- QR Code Button -->
+                <div class="toggle-section">
+                    <div class="toggle-header">
+                        <h4 class="toggle-title">QR Code Login</h4>
+                        <button type="button" id="toggleQRBtn" class="toggle-btn">
+                            <i class="fas fa-qrcode"></i> View QR Code
+                        </button>
+                    </div>
+                    <p class="toggle-description">Access your QR code for quick mobile login.</p>
+                </div>
+                
+                <!-- Danger Zone -->
+                <div class="section-title danger-title">Account Deletion</div>
+                <div class="delete-section">
+                    <div class="delete-content">
+                        <span class="delete-title">Delete Account Permanently</span>
+                        <p class="delete-description">Permanently remove your account and all data.</p>
+                    </div>
+                    <button onclick="handleDelete()" class="delete-btn">
+                        Delete
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
     

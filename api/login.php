@@ -107,7 +107,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 } else {
     echo json_encode(['status' => 'error', 'message' => 'Invalid request method']);
 }
+// After verifying credentials, check if account is pending deletion
+$stmt = $conn->prepare("SELECT user_id, password, status, deactivation_date FROM accounts_tbl WHERE username = ? OR email = ?");
+$stmt->bind_param("ss", $login, $login);
+$stmt->execute();
+$stmt->bind_result($user_id, $hashed_password, $status, $deactivation_date);
+$stmt->fetch();
 
+if ($status === 'pending_deletion') {
+    // Auto-recover account
+    $recover_stmt = $conn->prepare("UPDATE accounts_tbl SET status = 'active', deletion_requested_at = NULL, deactivation_date = NULL, recovery_token = NULL, token_expires_at = NULL WHERE user_id = ?");
+    $recover_stmt->bind_param("i", $user_id);
+    $recover_stmt->execute();
+    
+    // Continue with normal login...
+    $_SESSION['success'] = "Welcome back! Your account has been automatically recovered.";
+}
 // Close the database connection
 $conn->close();
 ?>

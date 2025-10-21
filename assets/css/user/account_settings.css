@@ -20,8 +20,8 @@ body {
     background: white;
     border-radius: 20px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-    padding: 40px;
-    max-width: 600px;
+    padding: 30px;
+    max-width: 900px;
     width: 100%;
     position: relative;
 }
@@ -57,15 +57,37 @@ body {
 .settings-title {
     text-align: center;
     color: #333;
-    margin-bottom: 30px;
+    margin-bottom: 25px;
     font-size: 2rem;
     font-weight: 600;
+}
+
+/* LANDSCAPE LAYOUT - Desktop */
+.landscape-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+#userInfoSection {
+    margin-top: 60px;
+}
+.left-column {
+    display: flex;
+    flex-direction: column;
+    margin-top: 50px;
+    gap: 6px;
+}
+
+.right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 }
 
 /* Profile Picture Section */
 .profile-picture-section {
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 0;
 }
 
 .profile-container {
@@ -94,8 +116,8 @@ body {
 }
 
 .profile-placeholder-icon {
-    font-size: 3rem;
-    color: #6c757d;
+    font-size: 1rem;
+    color: #656363;
 }
 
 .profile-image {
@@ -112,12 +134,12 @@ body {
 }
 
 .profile-menu-button {
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.325);
     border: none;
     border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    color: white;
+    width: 40px;
+    height: 40px;
+    color: rgb(255, 255, 255);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -133,7 +155,7 @@ body {
 .profile-dropdown {
     position: absolute;
     top: 100%;
-    right: 0;
+    right: 1px;
     background: white;
     border-radius: 10px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
@@ -160,8 +182,8 @@ body {
 }
 
 .profile-dropdown-icon {
-    margin-right: 10px;
-    width: 16px;
+    margin-right: 20px;
+    width: 19px;
     text-align: center;
 }
 
@@ -181,24 +203,97 @@ body {
 .form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    margin-bottom: 20px;
+    gap: 15px;
+    margin-bottom: 0;
 }
 
 .form-group {
     position: relative;
+    margin-bottom: 15px;
 }
 
+/* Form Icon Styles - Fixed Positioning */
 .form-group-icon {
     position: relative;
 }
 
+.form-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+    z-index: 2;
+    font-size: 1rem;
+    width: 16px;
+    text-align: center;
+}
+
 .form-input {
     width: 100%;
-    padding: 15px 15px 15px 45px;
+    padding: 12px 12px 12px 45px; /* Make sure left padding is enough for icon */
     border: 2px solid #e9ecef;
     border-radius: 10px;
-    font-size: 1rem;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+    position: relative;
+}
+
+/* Specific icon adjustments if needed */
+.fa-user, 
+.fa-signature, 
+.fa-envelope, 
+.fa-phone, 
+.fa-map-location-dot, 
+.fa-lock {
+    /* Ensure consistent sizing */
+    font-size: 1rem !important;
+}
+
+/* Make sure the input focus doesn't interfere with icons */
+.form-input:focus {
+    outline: none;
+    border-color: #667eea;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-input:focus + .form-icon {
+    color: #667eea; /* Change icon color on focus */
+}
+
+/* For smaller screens, adjust icon positioning */
+@media (max-width: 480px) {
+    .form-icon {
+        left: 12px;
+        font-size: 0.9rem;
+    }
+    
+    .form-input {
+        padding: 10px 10px 10px 40px; /* Adjust padding for mobile */
+    }
+}
+
+/* For very small screens */
+@media (max-width: 360px) {
+    .form-icon {
+        left: 10px;
+        font-size: 0.85rem;
+    }
+    
+    .form-input {
+        padding: 8px 8px 8px 35px;
+    }
+}
+
+
+.form-input {
+    width: 100%;
+    padding: 12px 12px 12px 45px;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    font-size: 0.95rem;
     transition: all 0.3s ease;
     background: #f8f9fa;
 }
@@ -210,32 +305,18 @@ body {
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
-.readonly-input {
-    background: #e9ecef;
-    color: #6c757d;
-    cursor: not-allowed;
-}
-
-.form-icon {
-    position: absolute;
-    left: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #6c757d;
-    z-index: 1;
-}
-
 .address-group {
-    margin-bottom: 30px;
+    margin-bottom: 0;
 }
 
 /* Section Titles */
 .section-title {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: 600;
     color: #333;
-    margin: 30px 0 20px 0;
-    padding-bottom: 10px;
+    margin: 0 0 6px 0;
+    margin-top: 40px;
+    padding-bottom: 3px;
     border-bottom: 2px solid #e9ecef;
 }
 
@@ -254,70 +335,156 @@ body {
     border-bottom-color: #17a2b8;
 }
 
-/* Password Section */
-.password-section {
+/* Toggle Sections */
+.toggle-section {
     background: #f8f9fa;
-    padding: 20px;
+    padding: 15px;
     border-radius: 10px;
-    margin-bottom: 30px;
+    margin-bottom: 0;
+    border: 1px solid #e9ecef;
 }
 
-.password-title {
+.toggle-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0;
+}
+
+.toggle-title {
     color: #495057;
-    margin-bottom: 15px;
-    font-size: 1rem;
-    font-weight: 500;
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.toggle-btn {
+    background: #667eea;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.toggle-btn:hover {
+    background: #5a6fd8;
+    transform: translateY(-2px);
+}
+
+.toggle-content {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+}
+
+.toggle-content:not(.hidden) {
+    max-height: 500px;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #e9ecef;
 }
 
 .password-group {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 12px;
+}
+
+/* Show Password Toggle */
+.show-password-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 0;
+}
+
+.show-password-toggle input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+}
+
+.show-password-toggle label {
+    color: #495057;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+}
+
+/* Password Mismatch Message */
+.password-mismatch {
+    background: #f8d7da;
+    color: #721c24;
+    padding: 8px 12px;
+    border-radius: 5px;
+    border: 1px solid #f5c6cb;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+}
+
+/* Close Toggle Button */
+.close-toggle-btn {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+}
+
+.close-toggle-btn:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
 }
 
 /* QR Section */
-.qr-section {
-    background: #f8f9fa;
-    padding: 20px;
-    border-radius: 10px;
-    margin-bottom: 30px;
-}
-
 .qr-content {
     text-align: center;
 }
 
-.qr-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: #333;
-    display: block;
-    margin-bottom: 10px;
-}
-
 .qr-description {
     color: #6c757d;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     line-height: 1.5;
+    text-align: left;
+    font-size: 0.9rem;
 }
 
 .qr-code-container {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 15px;
+    gap: 12px;
 }
 
 .qr-code-display {
     background: white;
-    padding: 20px;
+    padding: 15px;
     border-radius: 10px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 .qr-image {
-    width: 200px;
-    height: 200px;
+    width: 150px;
+    height: 150px;
     object-fit: contain;
 }
 
@@ -325,14 +492,14 @@ body {
     background: #17a2b8;
     color: white;
     border: none;
-    padding: 12px 24px;
-    border-radius: 25px;
+    padding: 10px 20px;
+    border-radius: 20px;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 0.9rem;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
 }
 
 .download-qr-btn:hover {
@@ -347,7 +514,7 @@ body {
     justify-content: space-between;
     align-items: center;
     background: #fff5f5;
-    padding: 20px;
+    padding: 15px;
     border-radius: 10px;
     border: 1px solid #fed7d7;
 }
@@ -357,26 +524,26 @@ body {
 }
 
 .delete-title {
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 600;
     color: #c53030;
     display: block;
-    margin-bottom: 5px;
+    margin-bottom: 4px;
 }
 
 .delete-description {
     color: #e53e3e;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
 }
 
 .delete-btn {
     background: #e53e3e;
     color: white;
     border: none;
-    padding: 12px 24px;
-    border-radius: 25px;
+    padding: 10px 20px;
+    border-radius: 20px;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 0.9rem;
     transition: all 0.3s ease;
 }
 
@@ -392,17 +559,17 @@ body {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     border: none;
-    padding: 15px;
+    padding: 12px;
     border-radius: 25px;
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    margin-top: 20px;
+    margin-top: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 8px;
 }
 
 .save-btn:hover {
@@ -452,7 +619,7 @@ body {
 .modal-content {
     background: white;
     border-radius: 15px;
-    padding: 30px;
+    padding: 25px;
     max-width: 400px;
     width: 90%;
     text-align: center;
@@ -461,31 +628,32 @@ body {
 
 .modal-title {
     color: #333;
-    margin-bottom: 15px;
-    font-size: 1.5rem;
+    margin-bottom: 12px;
+    font-size: 1.3rem;
 }
 
 .modal-text {
     color: #6c757d;
-    margin-bottom: 25px;
+    margin-bottom: 20px;
     line-height: 1.6;
+    font-size: 0.95rem;
 }
 
 .modal-actions {
     display: flex;
-    gap: 15px;
+    gap: 12px;
     justify-content: center;
 }
 
 .modal-btn {
-    padding: 12px 24px;
+    padding: 10px 20px;
     border: none;
-    border-radius: 25px;
+    border-radius: 20px;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 0.9rem;
     font-weight: 500;
     transition: all 0.3s ease;
-    min-width: 100px;
+    min-width: 80px;
 }
 
 .confirm-btn {
@@ -513,55 +681,13 @@ body {
     display: none !important;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-    .settings-card {
-        padding: 30px 20px;
-        margin: 10px;
-    }
-    
-    .form-grid {
-        grid-template-columns: 1fr;
-        gap: 15px;
-    }
-    
-    .delete-section {
-        flex-direction: column;
-        gap: 15px;
-        text-align: center;
-    }
-    
-    .modal-actions {
-        flex-direction: column;
-    }
-    
-    .qr-image {
-        width: 150px;
-        height: 150px;
-    }
-}
-
-@media (max-width: 480px) {
-    .settings-title {
-        font-size: 1.5rem;
-    }
-    
-    .profile-image-container {
-        width: 100px;
-        height: 100px;
-    }
-    
-    .profile-placeholder-icon {
-        font-size: 2.5rem;
-    }
-}
-
 /* Alert Styles */
 .alert {
-    padding: 15px;
+    padding: 12px 15px;
     border-radius: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     font-weight: 500;
+    font-size: 0.9rem;
 }
 
 .alert-success {
@@ -574,4 +700,290 @@ body {
     background: #f8d7da;
     color: #721c24;
     border: 1px solid #f5c6cb;
+}
+
+/* MOBILE VIEW - Portrait Layout */
+@media (max-width: 1024px) {
+    .landscape-layout {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .settings-card {
+        max-width: 600px;
+        padding: 25px 20px;
+    }
+    
+    .left-column,
+    .right-column {
+        gap: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .settings-card {
+        padding: 20px 15px;
+        margin: 10px;
+        max-height: 85vh;
+        overflow-y: auto;
+    }
+    
+    .settings-title {
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+    }
+    
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .toggle-header {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+    }
+    
+    .delete-section {
+        flex-direction: column;
+        gap: 12px;
+        text-align: center;
+    }
+    
+    .modal-actions {
+        flex-direction: column;
+    }
+    
+    .qr-image {
+        width: 130px;
+        height: 130px;
+    }
+    
+    .profile-image-container {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .profile-placeholder-icon {
+        font-size: 2.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 10px;
+    }
+    
+    .settings-card {
+        padding: 15px 12px;
+        border-radius: 15px;
+    }
+    
+    .settings-title {
+        font-size: 1.3rem;
+        margin-bottom: 15px;
+    }
+    
+    .profile-image-container {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .profile-placeholder-icon {
+        font-size: 2rem;
+    }
+    
+    .form-input {
+        padding: 10px 10px 10px 40px;
+        font-size: 0.9rem;
+    }
+    
+    .form-icon {
+        left: 12px;
+        font-size: 0.9rem;
+    }
+    
+    .toggle-section {
+        padding: 12px;
+    }
+    
+    .section-title {
+        font-size: 1rem;
+    }
+}
+
+/* Scrollbar styling for settings card */
+.settings-card::-webkit-scrollbar {
+    width: 6px;
+}
+
+.settings-card::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.settings-card::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 10px;
+}
+
+.settings-card::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Landscape optimization for very wide screens */
+@media (min-width: 1025px) and (min-height: 600px) {
+    .settings-card {
+        max-width: 950px;
+    }
+    
+    .landscape-layout {
+        gap: 35px;
+    }
+    
+    .left-column,
+    .right-column {
+        gap: 30px;
+    }
+}
+
+/* Very small mobile devices */
+@media (max-width: 360px) {
+    .settings-card {
+        padding: 12px 10px;
+    }
+    
+    .settings-title {
+        font-size: 1.2rem;
+    }
+    
+    .form-input {
+        padding: 8px 8px 8px 35px;
+        font-size: 0.85rem;
+    }
+    
+    .form-icon {
+        left: 10px;
+        font-size: 0.85rem;
+    }
+}
+
+
+/* Add these to your existing CSS file */
+
+/* Password Actions */
+/* Add to account_settings.css */
+.password-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.password-actions .save-btn {
+    flex: 1;
+    margin-top: 0;
+}
+
+.password-actions .close-toggle-btn {
+    margin-top: 0;
+    flex: 0 0 auto;
+}
+/* Toggle Description */
+.toggle-description {
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-top: 10px;
+    line-height: 1.4;
+}
+
+/* Ensure proper hidden state */
+#clientInfoSection:not(.hidden) {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+#passwordSection:not(.hidden) {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+
+/* Fade-in animation for left column sections */
+#userInfoSection,
+#passwordSection,
+#qrCodeSection {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* Optional: Add transition for smooth section switching */
+.left-column > div {
+    transition: all 0.3s ease-in-out;
+}
+
+/* Upload Overlay Styles - Only show when no image */
+.upload-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* background: rgba(102, 126, 234, 0.8); */
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    cursor: pointer;
+    opacity: 0;
+    transition: all 0.3s ease;
+    font-size: 0.8rem;
+    text-align: center;
+    padding: 10px;
+}
+
+.upload-overlay:hover {
+    opacity: 1;
+}
+
+.upload-overlay i {
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+}
+
+.upload-overlay span {
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1.2;
+}
+
+/* Make the entire circle clickable with cursor hint */
+.profile-image-container {
+    cursor: pointer;
+}
+
+/* When no image, show the overlay more prominently */
+.profile-image-container:has(.profile-placeholder-icon:not(.hidden)) .upload-overlay {
+    opacity: 1;
+    background: rgba(102, 126, 234, 0.355);
+}
+
+.profile-image-container:has(.profile-placeholder-icon:not(.hidden)):hover .upload-overlay {
+    background: rgb(102, 126, 234);
+    transform: scale(1.02);
 }

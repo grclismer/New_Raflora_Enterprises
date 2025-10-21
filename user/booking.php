@@ -314,9 +314,9 @@ if (isset($_GET['order_id']) && isset($_GET['payment_method']) && isset($_GET['p
                             <strong>BDO SAVINGS ACCOUNT:  0013 - 9018 - 3937</strong><br>
                         </div>
                         
-                        <p><strong>Order ID:</strong> <span id="modal-order-id"><?php echo $orderId; ?></span></p>
+                        
                         <p><strong>Package Price:</strong> <span id="package-price" class="text-info"><?php echo $formattedAmount; ?></span></p>
-                        <p><strong>Amount Due Now:</strong> <span id="amount-due-now" class="text-xl text-success"><?php echo $formattedAmount; ?></span></p>
+                        <p><strong>Amount Due Now:</strong> <span id="amount-due-now" class="text-xl text-danger"><?php echo $formattedAmount; ?></span></p>
                         
                         <input type="hidden" id="total-package-price" value="<?php echo $amountDue; ?>">
 
