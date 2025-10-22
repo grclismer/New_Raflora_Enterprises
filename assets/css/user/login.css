@@ -158,23 +158,7 @@ body {
     color: #70e000; /* Green for strong */
 }
 
-/* Welcome Message Styling */
-.welcome-message {
-    text-align: center;
-    color: #d5d5d5; /* Green color for greeting */
-    font-size: 1.5em;
-    margin-top: 50px;
-    margin-bottom: 5px;
-    font-weight: bold;
-    display: none; /* Hidden by default */
-    opacity: 0; /* For fade-in effect */
-    transition: opacity 0.5s ease-in-out;
-}
 
-.welcome-message.show {
-    display: block;
-    opacity: 1;
-}
 
 
 /* Existing Login Form Remainder */
@@ -476,3 +460,43 @@ body {
 .qr-btn:hover {
     background: #45a049 !important;
 }
+
+.welcome-message {
+    display: none; /* Start hidden */
+    padding: 10px;
+    margin: 10px 0;
+    font-size: 1em;
+    border-radius: 5px;
+    color: #d5d5d5;
+    text-align: center;
+    font-weight: 500;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.welcome-message.show {
+    display: block !important;
+}
+
+/* Ensure the message container is visible when it has content */
+#welcomeMessageLogin:not(:empty) {
+    display: block !important;
+}
+
+
+/* Welcome Message Styling */
+/* .welcome-message {
+    text-align: center;
+    color: #d5d5d5; 
+    font-size: 1.5em;
+    margin-top: 50px;
+    margin-bottom: 5px;
+    font-weight: bold;
+    display: none; 
+    opacity: 0; 
+    transition: opacity 0.5s ease-in-out;
+}
+
+.welcome-message.show {
+    display: block;
+    opacity: 1;
+} */

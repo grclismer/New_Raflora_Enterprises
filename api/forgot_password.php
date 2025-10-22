@@ -123,7 +123,11 @@ function sendResetEmail($email, $name, $resetLink) {
 <html>
 <head>
     <style>
-        /* ... your CSS styles ... */
+        .container { max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; text-align: center; }
+        .content { padding: 20px; background: #f9f9f9; }
+        .button { background: #667eea; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block; }
+        .footer { padding: 20px; text-align: center; background: #ddd; }
     </style>
 </head>
 <body>

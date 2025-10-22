@@ -29,14 +29,14 @@ body {
     margin: 0%;
     padding: 0%;
     height: 100vh;
-    padding-top: 5%;
+    /* padding-top: 5%; */
 }
 .Gallery-Page {
     display: block;
     position: relative;
     justify-content: center;
     padding: 3%;
-    padding-top: 10%;
+    padding-top: 6%;
 }
 .Header-Bg h1, .Header-Bg h3{
     display: flex;

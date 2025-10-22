@@ -550,7 +550,7 @@ function validatePhoneNumber(input) {
     
     // Limit to 11 digits
     if (input.value.length > 11) {
-        input.value = input.value.slice(0, 11);
+        input.value = input.value.slice(1, 11);
     }
     
     // Visual feedback
@@ -563,5 +563,177 @@ function validatePhoneNumber(input) {
         }
     } else {
         input.style.borderColor = '#e9ecef'; // Reset to default
+    }
+}
+
+
+// Deactivate Account (Temporary)
+function handleDeactivate() {
+    showMessage(
+        'Deactivate Account', 
+        'Your account will be deactivated immediately. You will be logged out and cannot login again for 30 days unless you recover your account via email. Continue?',
+        true
+    );
+    
+    const confirmBtn = document.querySelector('.confirm-btn');
+    const cancelBtn = document.getElementById('modal-cancel');
+    
+    confirmBtn.textContent = 'Deactivate';
+    cancelBtn.textContent = 'Cancel';
+    
+    confirmBtn.onclick = function() {
+        fetch('../api/deactivate_account.php', {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            closeMessageModal();
+            if (data.status === 'success') {
+                showMessage('Account Deactivated', data.message);
+                setTimeout(() => {
+                    window.location.href = '../guest/g-home.php';
+                }, 3000);
+            } else {
+                showMessage('Error', data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showMessage('Error', 'An error occurred while deactivating account.');
+        });
+    };
+    
+    cancelBtn.onclick = closeMessageModal;
+}
+
+// Delete Account (Permanent)
+function handleDelete() {
+    showMessage(
+        'Permanently Delete Account', 
+        '⚠️ WARNING: This will immediately and permanently delete your account and all data. This action cannot be undone!',
+        true
+    );
+    
+    const confirmBtn = document.querySelector('.confirm-btn');
+    const cancelBtn = document.getElementById('modal-cancel');
+    
+    confirmBtn.textContent = 'Delete Forever';
+    confirmBtn.style.background = '#e53e3e';
+    cancelBtn.textContent = 'Cancel';
+    
+    confirmBtn.onclick = function() {
+        fetch('../api/delete_account.php', {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            closeMessageModal();
+            if (data.status === 'success') {
+                showMessage('Account Deleted', data.message);
+                setTimeout(() => {
+                    window.location.href = '../guest/g-home.php';
+                }, 3000);
+            } else {
+                showMessage('Error', data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showMessage('Error', 'An error occurred while deleting account.');
+        });
+    };
+    
+    cancelBtn.onclick = closeMessageModal;
+}
+
+
+if (loginForm) {
+    loginForm.addEventListener('submit', async function(event) {
+        event.preventDefault();
+        
+        welcomeMessageLoginDiv.textContent = ''; // Clear previous message
+        welcomeMessageLoginDiv.style.color = 'red';
+        
+        try {
+            const response = await fetch('/raflora_enterprises/api/login.php', {
+                method: 'POST',
+                body: new FormData(this)
+            });
+            
+            const responseText = await response.text();
+            
+            let data;
+            try {
+                data = JSON.parse(responseText);
+            } catch (parseError) {
+                throw new Error('Server returned invalid response. Please try again.');
+            }
+            
+            if (data.status === 'success') {
+                welcomeMessageLoginDiv.textContent = 'Login successful! Redirecting...';
+                welcomeMessageLoginDiv.style.color = 'green';
+                setTimeout(() => {
+                    window.location.href = data.redirect_url;
+                }, 1000);
+            } else {
+                // Show deactivation message with recovery info
+                let errorMessage = data.message;
+                
+                // If there's recovery info, create a more detailed message
+                if (data.recovery_info) {
+                    const recoveryLink = data.recovery_info.recovery_link;
+                    const daysRemaining = data.recovery_info.days_remaining;
+                    
+                    errorMessage += `\n\nDays remaining: ${daysRemaining}`;
+                    
+                    // Create a clickable recovery link
+                    welcomeMessageLoginDiv.innerHTML = `
+                        <div style="text-align: left;">
+                            <p style="margin-bottom: 10px;">${data.message.split('.')[0]}.</p>
+                            <p style="margin-bottom: 15px;"><strong>${daysRemaining} days remaining</strong></p>
+                            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                <a href="${recoveryLink}" class="btn" style="background: #667eea; color: white; padding: 8px 16px; text-decoration: none; border-radius: 5px; font-size: 0.9rem;">
+                                    <i class="fas fa-envelope"></i> Recover Account
+                                </a>
+                                <button onclick="resendRecoveryEmail('${loginUsername}')" class="btn" style="background: #ed8936; color: white; padding: 8px 16px; border: none; border-radius: 5px; font-size: 0.9rem; cursor: pointer;">
+                                    <i class="fas fa-redo"></i> Resend Email
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    welcomeMessageLoginDiv.textContent = errorMessage;
+                }
+                
+                welcomeMessageLoginDiv.style.color = 'red';
+                document.getElementById('password').value = '';
+            }
+        } catch (error) {
+            welcomeMessageLoginDiv.textContent = error.message || 'An error occurred. Please try again.';
+            welcomeMessageLoginDiv.style.color = 'red';
+        }
+    });
+}
+
+// Function to resend recovery email
+async function resendRecoveryEmail(username) {
+    try {
+        const response = await fetch('/raflora_enterprises/api/resend_recovery.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `username=${encodeURIComponent(username)}`
+        });
+        
+        const result = await response.json();
+        
+        if (result.status === 'success') {
+            alert('Recovery email sent! Check your inbox.');
+        } else {
+            alert('Failed to send recovery email: ' + result.message);
+        }
+    } catch (error) {
+        alert('Error sending recovery email: ' + error.message);
     }
 }
