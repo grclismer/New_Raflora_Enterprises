@@ -1,5 +1,5 @@
 <?php
-// api/resend_recovery.php - CLEAN VERSION
+// api/resend_recovery.php - 30 DAYS VERSION
 date_default_timezone_set('Asia/Manila');
 session_start();
 header('Content-Type: application/json');
@@ -43,7 +43,7 @@ $stmt->bind_result($user_id, $first_name, $last_name, $user_email, $deactivation
 $stmt->fetch();
 $stmt->close();
 
-// Generate new recovery token
+// 30 DAYS - Normal version
 $recovery_token = bin2hex(random_bytes(32));
 $token_expires = date('Y-m-d H:i:s', strtotime('+30 days'));
 
@@ -54,7 +54,7 @@ $update_stmt->execute();
 $update_stmt->close();
 
 // Send email
-if (sendRecoveryEmail($user_email, $first_name, $recovery_token, $deactivation_date)) {
+if (sendRecoveryEmail($user_email, $first_name, $recovery_token, $token_expires)) {
     echo json_encode(['status' => 'success', 'message' => 'Recovery email sent successfully! Check your inbox.']);
 } else {
     echo json_encode(['status' => 'error', 'message' => 'Failed to send recovery email. Please try again.']);
@@ -79,12 +79,11 @@ function sendRecoveryEmail($email, $name, $token, $deactivation_date) {
         
         // Simple URL construction
         $recoveryLink = "http://localhost/raflora_enterprises/guest/recover_account.php?token=" . $token;
-        $days_remaining = ceil((strtotime($deactivation_date) - time()) / (60 * 60 * 24));
+        $days_remaining = max(1, ceil((strtotime($deactivation_date) - time()) / (60 * 60 * 24)));
         
         $mail->isHTML(true);
         $mail->Subject = 'Account Recovery - Raflora Enterprises';
         
-        // In your sendRecoveryEmail function, update the message:
         $mail->Body = "
         <!DOCTYPE html>
         <html>
@@ -123,14 +122,14 @@ function sendRecoveryEmail($email, $name, $token, $deactivation_date) {
                         <li>Login with your new password</li>
                     </ol>
                     
-                    <p><small>This link will expire in $days_remaining days.</small></p>
+                    <p><small>This link will expire in <strong>$days_remaining days</strong>.</small></p>
                 </div>
             </div>
         </body>
         </html>
         ";
         
-        $mail->AltBody = "Recover your account: $recoveryLink";
+        $mail->AltBody = "Recover your account: $recoveryLink (expires in $days_remaining days)";
         
         return $mail->send();
         

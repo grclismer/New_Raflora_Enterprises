@@ -1,5 +1,5 @@
 <?php
-// api/deactivate_account.php - FIXED VERSION
+// api/deactivate_account.php - 30 DAYS VERSION
 date_default_timezone_set('Asia/Manila');
 session_start();
 header('Content-Type: application/json');
@@ -35,30 +35,16 @@ $user_stmt->bind_result($first_name, $last_name, $user_email);
 $user_stmt->fetch();
 $user_stmt->close();
 
-// Generate recovery token
+// 30 DAYS - Normal version
 $recovery_token = bin2hex(random_bytes(32));
 $deactivation_date = date('Y-m-d H:i:s', strtotime('+30 days'));
 $token_expires = date('Y-m-d H:i:s', strtotime('+30 days'));
 
-// FIXED: Set status to 'deactivated' and all other fields
+// Set status to 'deactivated' and all other fields
 $stmt = $conn->prepare("UPDATE accounts_tbl SET status = 'deactivated', deletion_requested_at = NOW(), deactivation_date = ?, recovery_token = ?, token_expires_at = ? WHERE user_id = ?");
 $stmt->bind_param("sssi", $deactivation_date, $recovery_token, $token_expires, $user_id);
 
 if ($stmt->execute()) {
-    // DEBUG: Verify the update worked
-    error_log("✅ DEACTIVATION SUCCESS - User ID: $user_id");
-    error_log("✅ Set status to 'deactivated', deactivation_date: $deactivation_date");
-    
-    // Verify the update
-    $verify_stmt = $conn->prepare("SELECT status, deactivation_date, recovery_token FROM accounts_tbl WHERE user_id = ?");
-    $verify_stmt->bind_param("i", $user_id);
-    $verify_stmt->execute();
-    $verify_stmt->bind_result($new_status, $new_deactivation_date, $new_recovery_token);
-    $verify_stmt->fetch();
-    $verify_stmt->close();
-    
-    error_log("✅ VERIFICATION - Status: $new_status, Deactivation Date: $new_deactivation_date, Token: " . ($new_recovery_token ? "EXISTS" : "MISSING"));
-    
     // Send recovery email
     if (sendRecoveryEmail($user_email, $first_name, $recovery_token, $deactivation_date)) {
         // Logout user
@@ -72,7 +58,6 @@ if ($stmt->execute()) {
         echo json_encode(['status' => 'error', 'message' => 'Account deactivated but failed to send recovery email. Contact support.']);
     }
 } else {
-    error_log("❌ DEACTIVATION FAILED - User ID: $user_id");
     echo json_encode(['status' => 'error', 'message' => 'Failed to deactivate account']);
 }
 
@@ -95,11 +80,12 @@ function sendRecoveryEmail($email, $name, $token, $deactivation_date) {
         $mail->addAddress($email, $name);
         
         $recoveryLink = "http://" . $_SERVER['HTTP_HOST'] . "/raflora_enterprises/guest/recover_account.php?token=" . $token;
-        $days_remaining = ceil((strtotime($deactivation_date) - time()) / (60 * 60 * 24));
+        $days_remaining = max(1, ceil((strtotime($deactivation_date) - time()) / (60 * 60 * 24)));
         
         $mail->isHTML(true);
         $mail->Subject = 'Account Recovery - Raflora Enterprises';
-                $mail->Body = "
+        
+        $mail->Body = "
         <!DOCTYPE html>
         <html>
         <head>
@@ -137,14 +123,14 @@ function sendRecoveryEmail($email, $name, $token, $deactivation_date) {
                         <li>Login with your new password</li>
                     </ol>
                     
-                    <p><small>This link will expire in $days_remaining days.</small></p>
+                    <p><small>This link will expire in <strong>$days_remaining days</strong>.</small></p>
                 </div>
             </div>
         </body>
         </html>
         ";
         
-        $mail->AltBody = "Hello $name, Recover your account here: $recoveryLink (expires in 30 days)";
+        $mail->AltBody = "Recover your account: $recoveryLink (expires in $days_remaining days)";
         
         return $mail->send();
         
