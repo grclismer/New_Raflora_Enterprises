@@ -129,7 +129,8 @@ if (isset($_GET['order_id']) && isset($_GET['payment_method']) && isset($_GET['p
                 <li><a href="../user/gallery.php" class="nav-link">Gallery</a></li>
                 <li><a href="../user/about.php" class="nav-link">About</a></li>
                 <li class="active"><a href="../user/booking.php" class="nav-link">Book</a></li>
-                <li class="user-dropdown-toggle">
+                <div class="user-dropdown-toggle">
+                    <div class="flex items-center">
                     <div class="navbar-profile">
                         <?php if (!empty($user_data['profile_picture'])): ?>
                             <img src="/raflora_enterprises/<?php echo ltrim($user_data['profile_picture'], '/'); ?>" 
@@ -147,7 +148,7 @@ if (isset($_GET['order_id']) && isset($_GET['payment_method']) && isset($_GET['p
                         <li><a href="../user/my_bookings.php">My Bookings</a></li>
                         <li><a href="../api/logout.php">Log Out</a></li>
                     </ul>
-                </li>
+                </div>
             </ul>
         </nav>
         
@@ -189,7 +190,7 @@ if (isset($_GET['order_id']) && isset($_GET['payment_method']) && isset($_GET['p
                             </div>
                             <input type="hidden" name="design_uploaded_check" id="designUploadedCheck" required> 
                         </div>
-                        <div class="form-field">
+                        <div class="form-field time-recom">
                             <label for="event-schedule">Event Schedule</label>
                             <div class="date-time-group">
                                 <div class="date-field">
@@ -200,7 +201,7 @@ if (isset($_GET['order_id']) && isset($_GET['payment_method']) && isset($_GET['p
                                 </div>
                             </div>
                         </div>
-                        <div class="form-field form-field-regards">
+                        <div class="form-field time-recom">
                             <label for="regards">Your Recommendations :</label>
                             <textarea id="regards" name="recommendations" placeholder="Type your message here..." required></textarea>
                         </div>
@@ -322,7 +323,7 @@ if (isset($_GET['order_id']) && isset($_GET['payment_method']) && isset($_GET['p
 
                         <!-- Payment Method Display (Read-only) -->
                         <div class="mb-3">
-                            <label class="form-label">Selected Payment Method</label>
+                            <!-- <label class="form-label">Selected Payment Method</label> -->
                             <div class="form-control" style="background-color: #f8f9fa;">
                                 <strong><?php echo $paymentMethod; ?> - <?php echo $paymentType; ?></strong>
                             </div>

@@ -16,7 +16,6 @@ if ($conn->connect_error) {
 }
 
 if (!$conn->connect_error && isset($_SESSION['user_id'])) {
-    // IMPORTANT: Include profile_picture in the query
     $stmt = $conn->prepare("SELECT user_name, profile_picture FROM accounts_tbl WHERE user_id = ?");
     $stmt->bind_param("i", $_SESSION['user_id']);
     $stmt->execute();
@@ -31,25 +30,18 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About</title>
-    <link rel="stylesheet" href="../assets/css/user/about.css">
+    <title>About - Raflora Enterprises</title>
+    <link rel="stylesheet" href="../assets/css/user/landing.css">
     <link rel="stylesheet" href="../assets/css/user/footer.css">
     <link rel="stylesheet" href="../assets/css/user/navbar.css">
     <script src="../assets/js/user/navbar.js" defer></script>
-        <!-- 1. TAILWIND CSS CDN (CRITICAL for dark mode classes) -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- 2. DARK MODE CONFIGURATION + LOGIC (Nasa iisang JS file na dapat ang config at functions) -->
-    <!-- I-check kung tama ang path na ito: ../assets/js/user/dark_mode.js -->
-    <!-- Inalis ang 'defer' para iwas conflict -->
-    <script src="../assets/js/user/dark_mode.js"></script> 
-<!-- Font Awesome link na stable (6.4.0) -->
+    <script src="../assets/js/user/dark_mode.js" defer></script>
     <link rel="stylesheet" href="../assets/css/user/dark_mode.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="about-container">
-        <nav class="navbar">
+    <!-- Navigation -->
+    <nav class="navbar">
             <img src="../assets/images/logo/raflora-logo.jpg" alt="logo" class="logo" />
             <div class="hamburger-menu">
                 <i class="fas fa-bars"></i>
@@ -59,21 +51,18 @@ $conn->close();
                 <li><a href="../user/gallery.php" class="nav-link">Gallery</a></li>
                 <li class="active"><a href="../user/about.php" class="nav-link">About</a></li>
                 <li><a href="../user/booking.php" class="nav-link">Book</a></li>
-                <li class="user-dropdown-toggle">
+                <div class="user-dropdown-toggle">
+                    <div class="flex items-center">
                     <div class="navbar-profile">
                         <?php if (!empty($user_data['profile_picture'])): ?>
-                            <!-- Profile picture with CSS class -->
                             <img src="/raflora_enterprises/<?php echo ltrim($user_data['profile_picture'], '/'); ?>" 
                                 alt="Profile" 
                                 class="profile-picture profile-picture-small">
                         <?php else: ?>
-                            <!-- Default icon with CSS class -->
                             <div class="profile-default-icon">
                                 <i class="fa fa-user"></i>
                             </div>
                         <?php endif; ?>
-                        
-                        <!-- Username (optional) -->
                         <span class="navbar-username"><?php echo $user_data['user_name'] ?? 'User'; ?></span>
                     </div>
                     <ul class="user-dropdown-menu">
@@ -81,68 +70,216 @@ $conn->close();
                         <li><a href="../user/my_bookings.php">My Bookings</a></li>
                         <li><a href="../api/logout.php">Log Out</a></li>
                     </ul>
-                </li>
+                </div>
             </ul>
         </nav>
-        <!-- <button id="dark-mode-icon-toggle" 
-            class="fixed top-4 left-4 p-3 rounded-full text-2xl transition-colors duration-300 hover:bg-gray-200 dark:hover:bg-gray-800 z-[9999] focus:outline-none">
-        <i id="dark-mode-icon" class="fa-solid fa-moon text-blue-600 dark:text-yellow-400"></i>
-        </button> -->
-        <div class="About-Info">
-            <div class="profile-section">
-                <div class="profile-content">
-                    <h1>Antonio A. Adriatico Jr.</h1>
-                    <h3>CREATIVE DIRECTOR</h3>
-                    <p>Body text for your whole article or post. We'll put in some lorem ipsum to show how a filled-out page might look:</p>
-                    <br>    
-                    <p>Excepteur efficient emerging, minim veniam anim aute carefully curated Ginza conversation exquisite perfect nostrud nisi intricate Content. Qui international first-class nulla ut. adipisicing, essential lovely queen tempor eiusmod irure. Exclusive izakaya charming Scandinavian impeccable aute quality of life soft power pariatur Melbourne occaecat discerning. Qui wardrobe aliquip, et Porter destination Toto remarkable officia Helsinki excepteur Basset hound. Zürich sleepy perfect consectetur.</p>
-                </div>
-                    <div class="profile-image-container">
-                        <img src="../assets/images/portrait/antionio.jpg" alt="Antonio A. Adriatico Jr">
-                    </div>
+
+    <!-- About Hero Section -->
+    <section class="page-hero">
+        <!-- <div class="hero-background" style="background-image: url('../assets/images/Home/box-img2.jpg');"></div> -->
+        <div class="hero-background" style="background-image: url('../assets/images/Gallery/event/event1.jpg');"></div>
+        <div class="hero-overlay"></div>
+        
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1 class="hero-title fade-up">About Raflora</h1>
+                <p class="hero-subtitle fade-up delay-1">Meet the team behind your beautiful events</p>
+                <p class="hero-description fade-up delay-2">Passionate professionals dedicated to creating unforgettable experiences through exquisite decorations.</p>
             </div>
-            <div class="profile-section reverse">
-                <div class="profile-image-container">
-                    <img src="../assets/images/portrait/Rafael.jpg" alt="Raffy Chrisrtian Zamora">
+        </div>
+    </section>
+
+    <!-- Team Section -->
+    <section class="team-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Our Team</h2>
+                <p class="section-subtitle">The creative minds transforming your vision into reality</p>
+            </div>
+
+            <div class="team-members">
+                <!-- Team Member 1 -->
+                <div class="team-member fade-up">
+                    <div class="member-content">
+                        <div class="member-text">
+                            <h3>Antonio A. Adriatico Jr.</h3>
+                            <span class="member-role">CREATIVE DIRECTOR</span>
+                            <p>With over 15 years of experience in event design and decoration, Antonio brings creativity and innovation to every project. His artistic vision and attention to detail ensure that each event is uniquely beautiful and memorable.</p>
+                            <p>Specializing in floral arrangements and spatial design, Antonio transforms ordinary spaces into extraordinary experiences that captivate and inspire.</p>
+                            
+                            <div class="member-expertise">
+                                <h4>Areas of Expertise:</h4>
+                                <ul>
+                                    <li>Floral Design & Arrangements</li>
+                                    <li>Spatial Planning & Layout</li>
+                                    <li>Creative Concept Development</li>
+                                    <li>Color Theory & Coordination</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="member-image">
+                            <img src="../assets/images/portrait/antionio.jpg" alt="Antonio A. Adriatico Jr">
+                            <div class="image-overlay"></div>
+                        </div>
+                    </div>
                 </div>
-                <div class="profile-content">
-                    <h1>Raffy Christian Zamora</h1>
-                    <h3>PROPRIETOR </h3>
-                    <p>Body text for your whole article or post. We'll put in some lorem ipsum to show how a filled-out page might look:</p>
-                    <br>
-                    <p>Excepteur efficient emerging, minim veniam anim aute carefully curated Ginza conversation exquisite perfect nostrud nisi intricate Content. Qui international first-class nulla ut. adipisicing, essential lovely queen tempor eiusmod irure. Exclusive izakaya charming Scandinavian impeccable aute quality of life soft power pariatur Melbourne occaecat discerning. Qui wardrobe aliquip, et Porter destination Toto remarkable officia Helsinki excepteur Basset hound. Zürich sleepy perfect consectetur.</p>
+
+                <!-- Team Member 2 -->
+                <div class="team-member fade-up delay-1">
+                    <div class="member-content reverse">
+                        <div class="member-text">
+                            <h3>Raffy Christian Zamora</h3>
+                            <span class="member-role">PROPRIETOR & MANAGING DIRECTOR</span>
+                            <p>As the founder and driving force behind Raflora Enterprises, Raffy combines business acumen with a passion for beautiful events. His leadership ensures that every client receives exceptional service and attention.</p>
+                            <p>With a background in business management and event coordination, Raffy oversees operations to guarantee seamless execution and client satisfaction from concept to completion.</p>
+                            
+                            <div class="member-expertise">
+                                <h4>Areas of Expertise:</h4>
+                                <ul>
+                                    <li>Business Management & Strategy</li>
+                                    <li>Client Relations & Coordination</li>
+                                    <li>Event Planning & Execution</li>
+                                    <li>Quality Control & Assurance</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="member-image">
+                            <img src="../assets/images/portrait/Rafael.jpg" alt="Raffy Christian Zamora">
+                            <div class="image-overlay"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        
-      <!-- Footer -->
-        <footer class="footer" id="Page-footer">
-                <h1 class="Contact">Contact us</h1>
-                    <div class="social-icons-container">
-                        <div class="Social-Facebook">
-                            <h3>Facebook</h3>
-                            <p>Please visit us on</p>
-                            <a href="https://www.facebook.com/RafloraEnterprises">
-                                <img src="../assets/images/icon/facebook-icon.png" alt="facebook">
-                            </a>
-                            <a href="https://www.facebook.com/RafloraEnterprises" class="hyper-link-facebook">
-                                www.facebook.com/RafloraEnterprises
-                            </a>
-                        </div>
+    </section>
 
-                        <div class="Social-Email">
-                            <h3>Email</h3>
-                            <p>Please Reach us on</p>
-                            <a href="https://mail.google.com/mail/u/0/#inbox?compose=new">
-                                <img src="../assets/images/icon/gmail-icon.png" alt="gmail">
-                            </a>
-                            <a href="https://mail.google.com/mail/u/0/#inbox?compose=new" class="hyper-link-gmail">
-                                @raflora18.gmail.com
-                            </a>
+    <!-- Values Section -->
+    <section class="values-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Our Values</h2>
+                <p class="section-subtitle">What drives us to deliver excellence</p>
+            </div>
+            
+            <div class="values-grid">
+                <div class="value-card fade-up">
+                    <div class="value-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <h3>Passion</h3>
+                    <p>We pour our hearts into every project, ensuring each event reflects our love for beautiful design and attention to detail.</p>
+                </div>
+                
+                <div class="value-card fade-up delay-1">
+                    <div class="value-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <h3>Creativity</h3>
+                    <p>Innovative solutions and unique designs that transform ordinary spaces into extraordinary experiences.</p>
+                </div>
+                
+                <div class="value-card fade-up delay-2">
+                    <div class="value-icon">
+                        <i class="fas fa-award"></i>
+                    </div>
+                    <h3>Excellence</h3>
+                    <p>Commitment to the highest standards of quality in materials, craftsmanship, and service delivery.</p>
+                </div>
+                
+                <div class="value-card fade-up delay-3">
+                    <div class="value-icon">
+                        <i class="fas fa-handshake"></i>
+                    </div>
+                    <h3>Trust</h3>
+                    <p>Building lasting relationships through reliability, transparency, and exceptional client service.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-content">
+                <h2 class="cta-title">Ready to Work With Us?</h2>
+                <p class="cta-description">Let's discuss how we can bring your vision to life with our expertise and creative touch.</p>
+                <div class="cta-buttons">
+                    <a href="../user/booking.php" class="btn btn-primary btn-large">Start Your Project</a>
+                    <a href="../user/gallery.php" class="btn btn-secondary btn-large">See Our Work</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="modern-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <img src="../assets/images/logo/raflora-logo.jpg" alt="Raflora Enterprises" class="footer-logo">
+                    <p class="footer-description">Creating unforgettable events through exquisite decorations and professional service.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3 class="footer-heading">Contact Us</h3>
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <i class="fas fa-envelope"></i>
+                            <a href="mailto:raflora18@gmail.com">raflora18@gmail.com</a>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-phone"></i>
+                            <span>+63 9558659685</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Manila, Philippines</span>
                         </div>
                     </div>
-         </footer>
-    </div>
-  <!-- <script src="../assets/js/user/main.js"></script> -->
+                </div>
+                
+                <div class="footer-section">
+                    <h3 class="footer-heading">Follow Us</h3>
+                    <div class="social-links">
+                        <a href="https://www.facebook.com/RafloraEnterprises" target="_blank" class="social-link">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="https://www.instagram.com/raflora18/" class="social-link">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="social-link">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 Raflora Enterprises. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Scroll animations
+        window.addEventListener('scroll', () => {
+            document.querySelectorAll('.fade-up, .fade-left, .fade-right').forEach(el => {
+                const rect = el.getBoundingClientRect();
+                if (rect.top < window.innerHeight - 100) {
+                    el.classList.add('visible');
+                }
+            });
+        });
+
+        // Initialize animations on load
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.fade-up, .fade-left, .fade-right').forEach(el => {
+                const rect = el.getBoundingClientRect();
+                if (rect.top < window.innerHeight - 100) {
+                    el.classList.add('visible');
+                }
+            });
+        });
+    </script>
 </body>
 </html>

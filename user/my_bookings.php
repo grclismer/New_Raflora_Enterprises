@@ -91,40 +91,37 @@ function format_price($price) {
 <body>
     
     <nav class="navbar">
-        <img src="../assets/images/logo/raflora-logo.jpg" alt="logo" class="logo" />
-        <div class="hamburger-menu">
-            <i class="fas fa-bars"></i>
-        </div>
-        <ul class="nav-links">
-            <li><a href="../user/landing.php" class="nav-link">Home</a></li>
-            <li><a href="../user/gallery.php" class="nav-link">Gallery</a></li>
-            <li><a href="../user/about.php" class="nav-link">About</a></li> 
-            <li class="active"><a href="../user/my_bookings.php" class="nav-link">My Bookings</a></li>
-            <li class="user-dropdown-toggle">
-                <div class="navbar-profile">
-                    <?php if (!empty($user_data['profile_picture'])): ?>
-                        <!-- Profile picture with CSS class -->
-                        <img src="/raflora_enterprises/<?php echo ltrim($user_data['profile_picture'], '/'); ?>" 
-                            alt="Profile" 
-                            class="profile-picture profile-picture-small">
-                    <?php else: ?>
-                        <!-- Default icon with CSS class -->
-                        <div class="profile-default-icon">
-                            <i class="fa fa-user"></i>
-                        </div>
-                    <?php endif; ?>
-                    
-                    <!-- Username (optional) -->
-                    <span class="navbar-username"><?php echo $user_data['user_name'] ?? 'User'; ?></span>
+            <img src="../assets/images/logo/raflora-logo.jpg" alt="logo" class="logo" />
+            <div class="hamburger-menu">
+                <i class="fas fa-bars"></i>
+            </div>
+            <ul class="nav-links">
+                <li><a href="../user/landing.php" class="nav-link">Home</a></li>
+                <li><a href="../user/gallery.php" class="nav-link">Gallery</a></li>
+                <li><a href="../user/about.php" class="nav-link">About</a></li>
+                <li><a href="../user/booking.php" class="nav-link">Book</a></li>
+                <div class="user-dropdown-toggle">
+                    <div class="flex items-center">
+                    <div class="navbar-profile">
+                        <?php if (!empty($user_data['profile_picture'])): ?>
+                            <img src="/raflora_enterprises/<?php echo ltrim($user_data['profile_picture'], '/'); ?>" 
+                                alt="Profile" 
+                                class="profile-picture profile-picture-small">
+                        <?php else: ?>
+                            <div class="profile-default-icon">
+                                <i class="fa fa-user"></i>
+                            </div>
+                        <?php endif; ?>
+                        <span class="navbar-username"><?php echo $user_data['user_name'] ?? 'User'; ?></span>
+                    </div>
+                    <ul class="user-dropdown-menu">
+                        <li><a href="../user/account_settings.php">Account settings</a></li>
+                        <li class="active"><a href="../user/my_bookings.php">My Bookings</a></li>
+                        <li><a href="../api/logout.php">Log Out</a></li>
+                    </ul>
                 </div>
-                <ul class="user-dropdown-menu">
-                    <li><a href="../user/account_settings.php">Account settings</a></li>
-                    <li><a href="../user/booking.php">Book</a></li>
-                    <li><a href="../api/logout.php">Log Out</a></li>
-                </ul>
-            </li>
-        </ul>
-    </nav>
+            </ul>
+        </nav>
 
     <div class="container mx-auto p-4 md:p-8 mt-4">
         <h1 class="text-3xl font-bold mb-8 text-gray-800">My Booking History</h1>

@@ -16,7 +16,6 @@ if ($conn->connect_error) {
 }
 
 if (!$conn->connect_error && isset($_SESSION['user_id'])) {
-    // IMPORTANT: Include profile_picture in the query
     $stmt = $conn->prepare("SELECT user_name, profile_picture FROM accounts_tbl WHERE user_id = ?");
     $stmt->bind_param("i", $_SESSION['user_id']);
     $stmt->execute();
@@ -31,26 +30,18 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gallery</title>
-    <link rel="stylesheet" href="../assets/css/user/gallery.css">
+    <title>Gallery - Raflora Enterprises</title>
+    <link rel="stylesheet" href="../assets/css/user/landing.css">
     <link rel="stylesheet" href="../assets/css/user/footer.css">
     <link rel="stylesheet" href="../assets/css/user/navbar.css">
     <script src="../assets/js/user/navbar.js" defer></script>
-    <script src="../assets/js/user/gallery.js" defer></script> 
-        <!-- 1. TAILWIND CSS CDN (CRITICAL for dark mode classes) -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- 2. DARK MODE CONFIGURATION + LOGIC (Nasa iisang JS file na dapat ang config at functions) -->
-    <!-- I-check kung tama ang path na ito: ../assets/js/user/dark_mode.js -->
-    <!-- Inalis ang 'defer' para iwas conflict -->
-    <script src="../assets/js/user/dark_mode.js"></script> 
-<!-- Font Awesome link na stable (6.4.0) -->
+    <script src="../assets/js/user/dark_mode.js" defer></script>
     <link rel="stylesheet" href="../assets/css/user/dark_mode.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="landing-container">
-        <nav class="navbar">
+    <!-- Navigation -->
+    <nav class="navbar">
             <img src="../assets/images/logo/raflora-logo.jpg" alt="logo" class="logo" />
             <div class="hamburger-menu">
                 <i class="fas fa-bars"></i>
@@ -60,21 +51,18 @@ $conn->close();
                 <li class="active"><a href="../user/gallery.php" class="nav-link">Gallery</a></li>
                 <li><a href="../user/about.php" class="nav-link">About</a></li>
                 <li><a href="../user/booking.php" class="nav-link">Book</a></li>
-                <li class="user-dropdown-toggle">
-                   <div class="navbar-profile">
+                <div class="user-dropdown-toggle">
+                    <div class="flex items-center">
+                    <div class="navbar-profile">
                         <?php if (!empty($user_data['profile_picture'])): ?>
-                            <!-- Profile picture with CSS class -->
                             <img src="/raflora_enterprises/<?php echo ltrim($user_data['profile_picture'], '/'); ?>" 
                                 alt="Profile" 
                                 class="profile-picture profile-picture-small">
                         <?php else: ?>
-                            <!-- Default icon with CSS class -->
                             <div class="profile-default-icon">
                                 <i class="fa fa-user"></i>
                             </div>
                         <?php endif; ?>
-                        
-                        <!-- Username (optional) -->
                         <span class="navbar-username"><?php echo $user_data['user_name'] ?? 'User'; ?></span>
                     </div>
                     <ul class="user-dropdown-menu">
@@ -82,149 +70,364 @@ $conn->close();
                         <li><a href="../user/my_bookings.php">My Bookings</a></li>
                         <li><a href="../api/logout.php">Log Out</a></li>
                     </ul>
-                </li>
+                </div>
             </ul>
         </nav>
-        <!-- <button id="dark-mode-icon-toggle" 
-            class="fixed top-4 left-4 p-3 rounded-full text-2xl transition-colors duration-300 hover:bg-gray-200 dark:hover:bg-gray-800 z-[9999] focus:outline-none">
-        <i id="dark-mode-icon" class="fa-solid fa-moon text-blue-600 dark:text-yellow-400"></i>
-        </button> -->
-        <div class="Gallery-Page">
-            <div class="Header-Bg">
-                <h1>Raflora <br>Enterprises</h1>
-                <h3 >Event's Gallery</h3>
-                <img src="../assets/images/Gallery/event/entrance1.jpg" alt="Raflora Gallery" />
-            </div>
-            
-            <div class="Gallery-Collage">
-                
-                <div class="Image-Set1">
-                    <h1>Event's Back Drop</h1>
-                    <img class="main-gallery-img" src="../assets/images/Gallery/backdrop/backdrop1.jpg" alt="Beautiful Event Backdrop Display 1" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/backdrop/backdrop2.jpg" alt="Beautiful Event Backdrop Display 2" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/backdrop/backdrop3.jpg" alt="Beautiful Event Backdrop Display 3" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/backdrop/backdrop4.jpg" alt="Beautiful Event Backdrop Display 4" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/backdrop/backdrop5.jpg" alt="Beautiful Event Backdrop Display 5" />
-                </div>
-                
-                <div class="Image-Set2">
-                    <h1>Wedding</h1>
-                    <img class="main-gallery-img" src="../assets/images/Gallery/wedding/wed6.jpg" alt="Elegant Wedding Floral Arrangement 1" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/wedding/wed1.jpg" alt="Elegant Wedding Floral Arrangement 2" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/wedding/wed2.jpg" alt="Elegant Wedding Floral Arrangement 3" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/wedding/wed3.jpg" alt="Elegant Wedding Floral Arrangement 4" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/wedding/wed4.jpg" alt="Elegant Wedding Floral Arrangement 5" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/wedding/wed5.jpg" alt="Elegant Wedding Floral Arrangement 6" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/wedding/wed7.jpg" alt="Elegant Wedding Floral Arrangement 7" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/wedding/wed8.jpg" alt="Elegant Wedding Floral Arrangement 8" />
-                </div>
-                
-                <div class="Image-Set3">
-                    <h1>Flowers</h1>
-                    <img class="main-gallery-img" src="../assets/images/Gallery/flowers/flowerset3.jpg" alt="Vibrant Flower Bouquet 1" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/flowers/flowerset1.jpg" alt="Vibrant Flower Bouquet 2" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/flowers/flowerset2.jpg" alt="Vibrant Flower Bouquet 3" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/flowers/flowerset4.jpg" alt="Vibrant Flower Bouquet 4" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/flowers/flowerset5.jpg" alt="Vibrant Flower Bouquet 5" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/flowers/flowerset6.jpg" alt="Vibrant Flower Bouquet 6" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/flowers/flowerset8.jpg" alt="Vibrant Flower Bouquet 7" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/flowers/flowerset9.jpg" alt="Vibrant Flower Bouquet 8" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/flowers/flowerset10.jpg" alt="Vibrant Flower Bouquet 9" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/flowers/flowerset11.jpg" alt="Vibrant Flower Bouquet 10" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/flowers/flowerset12.jpg" alt="Vibrant Flower Bouquet 11" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/flowers/flowerset13.jpg" alt="Vibrant Flower Bouquet 12" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/flowers/flowerset14.jpg" alt="Vibrant Flower Bouquet 13" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/flowers/flowerset15.jpg" alt="Vibrant Flower Bouquet 14" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/flowers/flowerset16.jpg" alt="Vibrant Flower Bouquet 15" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/flowers/flowerset17.jpg" alt="Vibrant Flower Bouquet 16" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/flowers/flowerset18.jpg" alt="Vibrant Flower Bouquet 17" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/flowers/flowerset19.jpg" alt="Vibrant Flower Bouquet 18" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/flowers/flowerset20.jpg" alt="Vibrant Flower Bouquet 19" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/flowers/flowerset21.jpg" alt="Vibrant Flower Bouquet 20" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/flowers/flowerset22.jpg" alt="Vibrant Flower Bouquet 21" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/flowers/flowerset23.jpg" alt="Vibrant Flower Bouquet 22" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/flowers/flowerset24.jpg" alt="Vibrant Flower Bouquet 23" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/flowers/flowerset25.jpg" alt="Vibrant Flower Bouquet 24" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/flowers/flowerset26.jpg" alt="Vibrant Flower Bouquet 25" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/flowers/flowerset27.jpg" alt="Vibrant Flower Bouquet 26" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/flowers/flowerset28.jpg" alt="Vibrant Flower Bouquet 27" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/flowers/flowerset29.jpg" alt="Vibrant Flower Bouquet 28" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/flowers/flowerset30.jpg" alt="Vibrant Flower Bouquet 29" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/flowers/flowerset31.jpg" alt="Vibrant Flower Bouquet 30" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/flowers/flowerset32.jpg" alt="Vibrant Flower Bouquet 31" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/flowers/flowerset33.jpg" alt="Vibrant Flower Bouquet 32" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/flowers/flower1.jpg" alt="Vibrant Flower Bouquet 33" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/flowers/flower2.jpg" alt="Vibrant Flower Bouquet 34" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/flowers/flower3.jpg" alt="Vibrant Flower Bouquet 35" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/flowers/flower4.jpg" alt="Vibrant Flower Bouquet 36" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/flowers/flower5.jpg" alt="Vibrant Flower Bouquet 37" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/flowers/flower6.jpg" alt="Vibrant Flower Bouquet 38" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/flowers/flowerset7.jpg" alt="Vibrant Flower Bouquet 39" />
-                </div>
-                
-                <div class="Image-Set4">
-                    <h1>Christmas</h1>
-                    <img class="main-gallery-img" src="../assets/images/Gallery/xmass/xmass4.jpg" alt="Festive Christmas Decor and Flowers 1" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/xmass/xmass1.jpg" alt="Festive Christmas Decor and Flowers 2" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/xmass/xmass2.jpg" alt="Festive Christmas Decor and Flowers 3" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/xmass/xmass3.jpg" alt="Festive Christmas Decor and Flowers 4" />
-                </div>
-                
-                <div class="Image-Set5">
-                    <h1>Birthday</h1>
-                    <img class="main-gallery-img" src="../assets/images/Gallery/Birthday/kik1.jpg" alt="Colorful Birthday Party Setup 1" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/Birthday/kik2.jpg" alt="Colorful Birthday Party Setup 2" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/Birthday/gallery1.jpg" alt="Colorful Birthday Party Setup 3" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/Birthday/gallery2.jpg" alt="Colorful Birthday Party Setup 4" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/Birthday/gallery3.jpg" alt="Colorful Birthday Party Setup 5" />
-                </div>
-                
-                <div class="Image-Set6">
-                    <h1>Funeral</h1>
-                    <img class="main-gallery-img" src="../assets/images/Gallery/Funeral/funeral1.jpg" alt="Sober Funeral Floral Wreath 1" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/Funeral/funeral2.jpg" alt="Sober Funeral Floral Wreath 2" />
-                    <img class="hidden-gallery-img" src="../assets/images/Gallery/Funeral/funeral3.jpg" alt="Sober Funeral Floral Wreath 3" />
-                </div>
-                
+
+    <!-- Gallery Hero Section -->
+    <section class="page-hero">
+        <div class="hero-background" style="background-image: url('../assets/images/Gallery/event/entrance1.jpg');"></div>
+        <div class="hero-overlay"></div>
+        
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1 class="hero-title fade-up">Our Gallery</h1>
+                <p class="hero-subtitle fade-up delay-1">A showcase of our finest work</p>
+                <p class="hero-description fade-up delay-2">Explore our portfolio of beautifully decorated events and discover the possibilities for your special occasion.</p>
             </div>
         </div>
-        
-        <footer class="footer" id="Page-footer">
-            <h1 class="Contact">Contact us</h1>
-            <div class="social-icons-container">
-                <div class="Social-Facebook">
-                    <h3>Facebook</h3>
-                    <p>Please visit us on</p>
-                    <a href="https://www.facebook.com/RafloraEnterprises">
-                        <img src="../assets/images/icon/facebook-icon.png" alt="facebook">
-                    </a>
-                    <a href="https://www.facebook.com/RafloraEnterprises" class="hyper-link-facebook">
-                        www.facebook.com/RafloraEnterprises
-                    </a>
+    </section>
+
+    <!-- Gallery Filter -->
+    <section class="gallery-filter-section">
+        <div class="container">
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="all">All Projects</button>
+                <button class="filter-btn" data-filter="wedding">Weddings</button>
+                <button class="filter-btn" data-filter="backdrop">Backdrops</button>
+                <button class="filter-btn" data-filter="flowers">Flowers</button>
+                <button class="filter-btn" data-filter="christmas">Christmas</button>
+                <button class="filter-btn" data-filter="birthday">Birthdays</button>
+                <button class="filter-btn" data-filter="funeral">Funerals</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Grid -->
+    <section class="gallery-section">
+        <div class="container">
+            <div class="gallery-grid">
+                <!-- Wedding Images -->
+                <div class="gallery-item wedding fade-up" data-category="wedding">
+                    <img src="../assets/images/Gallery/wedding/wed6.jpg" alt="Elegant Wedding Decoration" class="gallery-image">
+                    <div class="gallery-overlay">
+                        <div class="gallery-info">
+                            <h3>Wedding Celebration</h3>
+                            <p>Elegant floral arrangements</p>
+                            <button class="view-btn" data-src="../assets/images/Gallery/wedding/wed6.jpg" data-title="Wedding Celebration">
+                                <i class="fas fa-expand"></i>
+                                
+                            </button>
+                            
+                        </div>
+                    </div>
                 </div>
 
-                <div class="Social-Email">
-                    <h3>Email</h3>
-                    <p>Please Reach us on</p>
-                    <a href="https://mail.google.com/mail/u/0/#inbox?compose=new">
-                        <img src="../assets/images/icon/gmail-icon.png" alt="gmail">
-                    </a>
-                    <a href="https://mail.google.com/mail/u/0/#inbox?compose=new" class="hyper-link-gmail">
-                        @raflora18.gmail.com
-                    </a>
+                <div class="gallery-item wedding fade-up delay-1" data-category="wedding">
+                    <img src="../assets/images/Gallery/wedding/wed1.jpg" alt="Wedding Floral Arrangement" class="gallery-image">
+                    <div class="gallery-overlay">
+                        <div class="gallery-info">
+                            <h3>Bridal Bouquet</h3>
+                            <p>Custom floral design</p>
+                            <button class="view-btn" data-src="../assets/images/Gallery/wedding/wed1.jpg" data-title="Bridal Bouquet">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Backdrop Images -->
+                <div class="gallery-item backdrop fade-up" data-category="backdrop">
+                    <img src="../assets/images/Gallery/backdrop/backdrop1.jpg" alt="Event Backdrop" class="gallery-image">
+                    <div class="gallery-overlay">
+                        <div class="gallery-info">
+                            <h3>Event Backdrop</h3>
+                            <p>Custom designed backdrop</p>
+                            <button class="view-btn" data-src="../assets/images/Gallery/backdrop/backdrop1.jpg" data-title="Event Backdrop">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="gallery-item backdrop fade-up delay-1" data-category="backdrop">
+                    <img src="../assets/images/Gallery/backdrop/backdrop2.jpg" alt="Stage Backdrop" class="gallery-image">
+                    <div class="gallery-overlay">
+                        <div class="gallery-info">
+                            <h3>Stage Design</h3>
+                            <p>Professional backdrop setup</p>
+                            <button class="view-btn" data-src="../assets/images/Gallery/backdrop/backdrop2.jpg" data-title="Stage Design">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Flower Images -->
+                <div class="gallery-item flowers fade-up" data-category="flowers">
+                    <img src="../assets/images/Gallery/flowers/flowerset3.jpg" alt="Floral Arrangement" class="gallery-image">
+                    <div class="gallery-overlay">
+                        <div class="gallery-info">
+                            <h3>Floral Centerpiece</h3>
+                            <p>Beautiful flower arrangement</p>
+                            <button class="view-btn" data-src="../assets/images/Gallery/flowers/flowerset3.jpg" data-title="Floral Centerpiece">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="gallery-item flowers fade-up delay-1" data-category="flowers">
+                    <img src="../assets/images/Gallery/flowers/flowerset1.jpg" alt="Flower Bouquet" class="gallery-image">
+                    <div class="gallery-overlay">
+                        <div class="gallery-info">
+                            <h3>Flower Bouquet</h3>
+                            <p>Handcrafted bouquet design</p>
+                            <button class="view-btn" data-src="../assets/images/Gallery/flowers/flowerset1.jpg" data-title="Flower Bouquet">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Christmas Images -->
+                <div class="gallery-item christmas fade-up" data-category="christmas">
+                    <img src="../assets/images/Gallery/xmass/xmass4.jpg" alt="Christmas Decoration" class="gallery-image">
+                    <div class="gallery-overlay">
+                        <div class="gallery-info">
+                            <h3>Christmas Theme</h3>
+                            <p>Festive holiday decoration</p>
+                            <button class="view-btn" data-src=
+                            "../assets/images/Gallery/xmass/xmass4.jpg" data-title="Christmas Theme">
+
+                                <i class="fas fa-expand"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Birthday Images -->
+                <div class="gallery-item birthday fade-up delay-1" data-category="birthday">
+                    <img src="../assets/images/Gallery/Birthday/kik1.jpg" alt="Birthday Party" class="gallery-image">
+                    <div class="gallery-overlay">
+                        <div class="gallery-info">
+                            <h3>Birthday Celebration</h3>
+                            <p>Colorful party setup</p>
+                            <button class="view-btn" data-src="../assets/images/Gallery/Birthday/kik1.jpg" data-title="Birthday Celebration">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Funeral Images -->
+                <div class="gallery-item funeral fade-up" data-category="funeral">
+                    <img src="../assets/images/Gallery/Funeral/funeral1.jpg" alt="Funeral Flowers" class="gallery-image">
+                    <div class="gallery-overlay">
+                        <div class="gallery-info">
+                            <h3>Sympathy Arrangement</h3>
+                            <p>Respectful floral tribute</p>
+                            <button class="view-btn" data-src="../assets/images/Gallery/Funeral/funeral1.jpg" data-title="Sympathy Arrangement">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add more images following the same pattern for each category -->
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-content">
+                <h2 class="cta-title">Inspired by Our Work?</h2>
+                <p class="cta-description">Let us create something equally beautiful for your special event.</p>
+                <div class="cta-buttons">
+                    <a href="../user/booking.php" class="btn btn-primary btn-large">Book Your Event</a>
+                    <a href="../user/about.php" class="btn btn-secondary btn-large">Learn More About Us</a>
                 </div>
             </div>
-        </footer>
-    </div>
-    
-    <div id="galleryModal" class="modal">
-        <span class="close-btn">&times;</span>
-        <div class="modal-content">
-            <a class="prev">&#10094;</a>
-            <a class="next">&#10095;</a>
-            <img class="modal-image" id="modalImage" alt="Gallery Image">
-            <div id="caption"></div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="modern-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <img src="../assets/images/logo/raflora-logo.jpg" alt="Raflora Enterprises" class="footer-logo">
+                    <p class="footer-description">Creating unforgettable events through exquisite decorations and professional service.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3 class="footer-heading">Contact Us</h3>
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <i class="fas fa-envelope"></i>
+                            <a href="mailto:raflora18@gmail.com">raflora18@gmail.com</a>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-phone"></i>
+                            <span>+63 9558659685</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h3 class="footer-heading">Follow Us</h3>
+                    <div class="social-links">
+                        <a href="https://www.facebook.com/RafloraEnterprises" target="_blank" class="social-link">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="https://www.instagram.com/raflora18/" class="social-link">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="social-link">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 Raflora Enterprises. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Lightbox Modal -->
+    <div id="lightbox" class="lightbox">
+        <div class="lightbox-content">
+            <span class="lightbox-close">&times;</span>
+            <img src="" alt="" class="lightbox-image">
+            <div class="lightbox-caption"></div>
+            <button class="lightbox-nav lightbox-prev">&#10094;</button>
+            <button class="lightbox-nav lightbox-next">&#10095;</button>
         </div>
     </div>
+
+    <script>
+        // Gallery Filter Functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const galleryItems = document.querySelectorAll('.gallery-item');
+
+            filterButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // Remove active class from all buttons
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    // Add active class to clicked button
+                    button.classList.add('active');
+                    
+                    const filterValue = button.getAttribute('data-filter');
+                    
+                    galleryItems.forEach(item => {
+                        if (filterValue === 'all' || item.getAttribute('data-category') === filterValue) {
+                            item.style.display = 'block';
+                            setTimeout(() => {
+                                item.style.opacity = '1';
+                                item.style.transform = 'scale(1)';
+                            }, 100);
+                        } else {
+                            item.style.opacity = '0';
+                            item.style.transform = 'scale(0.8)';
+                            setTimeout(() => {
+                                item.style.display = 'none';
+                            }, 300);
+                        }
+                    });
+                });
+            });
+
+            // Lightbox functionality
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImg = lightbox.querySelector('.lightbox-image');
+            const lightboxCaption = lightbox.querySelector('.lightbox-caption');
+            const viewButtons = document.querySelectorAll('.view-btn');
+            const closeLightbox = lightbox.querySelector('.lightbox-close');
+            const prevButton = lightbox.querySelector('.lightbox-prev');
+            const nextButton = lightbox.querySelector('.lightbox-next');
+
+            let currentImageIndex = 0;
+            const allImages = Array.from(viewButtons);
+
+            viewButtons.forEach((button, index) => {
+                button.addEventListener('click', () => {
+                    currentImageIndex = index;
+                    openLightbox(currentImageIndex);
+                });
+            });
+
+            function openLightbox(index) {
+                const button = allImages[index];
+                const src = button.getAttribute('data-src');
+                const title = button.getAttribute('data-title');
+                
+                lightboxImg.src = src;
+                lightboxCaption.textContent = title;
+                lightbox.style.display = 'flex';
+                
+                // Add fade-in animation
+                setTimeout(() => {
+                    lightbox.classList.add('active');
+                }, 50);
+            }
+
+            function closeLightboxFunc() {
+                lightbox.classList.remove('active');
+                setTimeout(() => {
+                    lightbox.style.display = 'none';
+                }, 300);
+            }
+
+            function navigateLightbox(direction) {
+                currentImageIndex += direction;
+                if (currentImageIndex >= allImages.length) currentImageIndex = 0;
+                if (currentImageIndex < 0) currentImageIndex = allImages.length - 1;
+                openLightbox(currentImageIndex);
+            }
+
+            closeLightbox.addEventListener('click', closeLightboxFunc);
+            prevButton.addEventListener('click', () => navigateLightbox(-1));
+            nextButton.addEventListener('click', () => navigateLightbox(1));
+
+            // Close lightbox when clicking outside the image
+            lightbox.addEventListener('click', (e) => {
+                if (e.target === lightbox) {
+                    closeLightboxFunc();
+                }
+            });
+
+            // Keyboard navigation
+            document.addEventListener('keydown', (e) => {
+                if (lightbox.style.display === 'flex') {
+                    if (e.key === 'Escape') closeLightboxFunc();
+                    if (e.key === 'ArrowLeft') navigateLightbox(-1);
+                    if (e.key === 'ArrowRight') navigateLightbox(1);
+                }
+            });
+
+            // Scroll animations
+            window.addEventListener('scroll', () => {
+                document.querySelectorAll('.fade-up, .fade-left, .fade-right').forEach(el => {
+                    const rect = el.getBoundingClientRect();
+                    if (rect.top < window.innerHeight - 100) {
+                        el.classList.add('visible');
+                    }
+                });
+            });
+
+            // Initialize animations on load
+            document.querySelectorAll('.fade-up, .fade-left, .fade-right').forEach(el => {
+                const rect = el.getBoundingClientRect();
+                if (rect.top < window.innerHeight - 100) {
+                    el.classList.add('visible');
+                }
+            });
+        });
+    </script>
 </body>
 </html>

@@ -472,7 +472,6 @@ if ($booking['booking_status'] == 'COMPLETED') {
                         <strong>BDO SAVINGS ACCOUNT:  0013-9018-3937</strong><br>
                     </div>
                     
-                    <p><strong>Order ID:</strong> <span id="modal-order-id"><?php echo $orderId; ?></span></p>
                     <p><strong>Package Price:</strong> <span id="package-price" class="text-info"><?php echo format_price($totalPrice); ?></span></p>
                     <p><strong>Amount Due Now:</strong> <span id="amount-due-now" class="text-xl text-success"><?php echo format_price($amountDue); ?></span></p>
                     
@@ -480,7 +479,7 @@ if ($booking['booking_status'] == 'COMPLETED') {
 
                     <!-- Payment Method Display (Read-only) -->
                     <div class="mb-3">
-                        <label class="form-label">Selected Payment Method</label>
+                        <!-- <label class="form-label">Selected Payment Method</label> -->
                         <div class="form-control" style="background-color: #f8f9fa;">
                             <strong><?php echo htmlspecialchars($booking['payment_method']); ?> - <?php echo htmlspecialchars($booking['payment_type']); ?></strong>
                         </div>

@@ -14,8 +14,8 @@
             <!-- Inside your login form -->
 <form id="loginForm" action="../api/login.php" method="post">
     
-    <span class="return">
-        <a href="../guest/g-home.php"><h2>X</h2></a>
+    <span class="close-btn">
+        <a href="../guest/g-home.php">X</a>
     </span>
     
     <!-- Traditional Login Container -->
@@ -40,7 +40,7 @@
             <a href="#frogot-form" id="showForgotPassword">Forgot password?</a>
         </div>
         
-        <button type="submit" class="btn">Login</button>
+        <button type="submit" class="btn btn-primary">Login</button>
         
         <div class="register-link">
             <p>Don't have an account? <a href="#register-form" id="showRegister">Register</a></p>
@@ -82,8 +82,8 @@
     <div class="Login-form hidden" id="registerFormContainer">
         <div class="regwrapper">
             <form id="registrationForm" action="../api/register.php" method="post">
-                    <span class="return">
-                        <a href="../guest/g-home.php"><h2>X</h2></a>
+                    <span class="close-btn">
+                        <a href="../guest/g-home.php">X</a>
                     </span>
                     <h1>Register</h1>
                 <div class="regrow-1" id="set1">
@@ -144,7 +144,7 @@
                         <i class="fa-solid fa-mobile-screen-button"></i>
                     </div>
                 </div>
-                    <button type="submit" class="btn">Register</button>
+                    <button type="submit" class="btn btn-primary">Register</button>
                     <div class="register-link">
                         <p>Already have an account? <a href="#login-form" id="showLoginFromRegister">Login</a></p>
                     </div>
@@ -155,8 +155,8 @@
     <div class="Login-form hidden" id="forgotPasswordContainer">
         <div class="wrapper">
             <form id="forgotPasswordForm">
-                <span class="return">
-                    <a href="../guest/g-home.php"><h2>X</h2></a>
+                <span class="close-btn">
+                    <a href="../guest/g-home.php">X</a>
                 </span>
                 <h1>Forgot Password</h1>
                 <div id="forgotPasswordMessage" class="welcome-message"></div>
@@ -166,7 +166,7 @@
                     <label for="forgot-email">Email</label>
                 <i class="fa-solid fa-envelope"></i>
                 </div>
-                <button type="submit" class="btn">Reset Password</button>
+                <button type="submit" class="btn btn-primary">Reset Password</button>
                 <div class="register-link">
                     <p>Remember your password? <a href="#" id="showLoginFromForgot">Login</a></p>
                 </div>

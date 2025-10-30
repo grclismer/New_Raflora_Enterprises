@@ -1,5 +1,5 @@
 <?php
-// guest/recover_account.php
+// guest/recover_account.php - REDIRECT TO PASSWORD RESET VERSION
 date_default_timezone_set('Asia/Manila');
 session_start();
 
@@ -19,16 +19,18 @@ $message = '';
 $success = false;
 $valid_token = false;
 $token_expired = false;
+$user_id = null;
+$email = '';
 
 if ($token) {
-    // FIXED: Check for accounts with this recovery token, regardless of status
-    $stmt = $conn->prepare("SELECT user_id, token_expires_at, status FROM accounts_tbl WHERE recovery_token = ?");
+    // Check for valid recovery token
+    $stmt = $conn->prepare("SELECT user_id, token_expires_at, email FROM accounts_tbl WHERE recovery_token = ?");
     $stmt->bind_param("s", $token);
     $stmt->execute();
     $stmt->store_result();
     
     if ($stmt->num_rows > 0) {
-        $stmt->bind_result($user_id, $expires_at, $status);
+        $stmt->bind_result($user_id, $expires_at, $email);
         $stmt->fetch();
         
         $current_time = time();
@@ -36,17 +38,35 @@ if ($token) {
         
         if ($expire_time > $current_time) {
             $valid_token = true;
-            // Recover the account - set to active and clear all deactivation fields
-            $recover_stmt = $conn->prepare("UPDATE accounts_tbl SET status = 'active', deletion_requested_at = NULL, deactivation_date = NULL, recovery_token = NULL, token_expires_at = NULL WHERE user_id = ?");
-            $recover_stmt->bind_param("i", $user_id);
             
-            if ($recover_stmt->execute()) {
-                $success = true;
-                $message = "Account recovered successfully! You can now login to your account.";
+            // Generate a password reset token (similar to forgot_password.php)
+            $reset_token = bin2hex(random_bytes(32));
+            $reset_expires = date('Y-m-d H:i:s', time() + (24 * 60 * 60)); // 24 hours
+            
+            // Store reset token in password_resets table
+            $delete_stmt = $conn->prepare("DELETE FROM password_resets WHERE email = ?");
+            $delete_stmt->bind_param("s", $email);
+            $delete_stmt->execute();
+            $delete_stmt->close();
+            
+            $insert_stmt = $conn->prepare("INSERT INTO password_resets (email, token, expires_at) VALUES (?, ?, ?)");
+            $insert_stmt->bind_param("sss", $email, $reset_token, $reset_expires);
+            
+            if ($insert_stmt->execute()) {
+                // Clean up recovery token and redirect to password reset
+                $update_stmt = $conn->prepare("UPDATE accounts_tbl SET recovery_token = NULL, token_expires_at = NULL WHERE user_id = ?");
+                $update_stmt->bind_param("i", $user_id);
+                $update_stmt->execute();
+                $update_stmt->close();
+                
+                // Redirect to password reset page
+                header("Location: ../reset_password.php?token=" . $reset_token . "&recovery=1");
+                exit();
             } else {
-                $message = "Failed to recover account. Please try again.";
+                $message = "Failed to process recovery. Please try again.";
             }
-            $recover_stmt->close();
+            $insert_stmt->close();
+            
         } else {
             $valid_token = false;
             $token_expired = true;
@@ -57,7 +77,6 @@ if ($token) {
             $delete_stmt->close();
         }
     } else {
-        // Token not found at all
         $valid_token = false;
     }
     $stmt->close();
@@ -73,6 +92,34 @@ $conn->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Account Recovery - Raflora Enterprises</title>
     <link rel="stylesheet" href="../assets/css/user/login.css">
+    <style>
+        .success-state, .error-state {
+            text-align: center;
+            padding: 30px;
+        }
+        .success-icon, .error-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+        .success-icon {
+            color: #28a745;
+        }
+        .error-icon {
+            color: #dc3545;
+        }
+        .btn {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 15px 10px;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+    </style>
 </head>
 <body>
     <div class="Login-form">
@@ -91,7 +138,7 @@ $conn->close();
                         <div class="success-icon">✓</div>
                         <h3>Account Recovered!</h3>
                         <p><?php echo $message; ?></p>
-                        <a href="../guest/g-home.php" class="btn btn-primary">Continue to Login</a>
+                        <a href="../user/user_login.php" class="btn">Continue to Login</a>
                     </div>
                 <?php elseif ($token && !$valid_token): ?>
                     <div class="error-state">
@@ -104,7 +151,7 @@ $conn->close();
                             ?>
                         </p>
                         <div style="margin-top: 15px;">
-                            <a href="../guest/g-home.php" class="btn btn-outline">
+                            <a href="../user/user_login.php" class="btn">
                                 <i class="fas fa-arrow-left"></i>
                                 Return to Login
                             </a>
@@ -115,6 +162,12 @@ $conn->close();
                         <div class="error-icon">❌</div>
                         <h3>Missing Recovery Link</h3>
                         <p>No recovery token provided. Please check your email for the recovery link.</p>
+                        <div style="margin-top: 15px;">
+                            <a href="../user/user_login.php" class="btn">
+                                <i class="fas fa-arrow-left"></i>
+                                Return to Login
+                            </a>
+                        </div>
                     </div>
                 <?php endif; ?>
             </form>

@@ -99,40 +99,45 @@ function sendRecoveryEmail($email, $name, $token, $deactivation_date) {
         
         $mail->isHTML(true);
         $mail->Subject = 'Account Recovery - Raflora Enterprises';
-        $mail->Body = "
+                $mail->Body = "
         <!DOCTYPE html>
         <html>
         <head>
+            <meta charset='UTF-8'>
             <style>
-                .container { max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif; }
-                .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; text-align: center; }
-                .content { padding: 20px; background: #f9f9f9; }
-                .button { background: #667eea; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block; }
-                .footer { padding: 20px; text-align: center; background: #ddd; }
+                body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
+                .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+                .header { background: #667eea; color: white; padding: 30px; text-align: center; }
+                .content { padding: 30px; }
+                .button { background: #667eea; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; display: inline-block; font-size: 16px; }
             </style>
         </head>
         <body>
             <div class='container'>
                 <div class='header'>
                     <h1>🌺 Raflora Enterprises</h1>
-                    <h2>Account Recovery</h2>
+                    <h2>Account Recovery Required</h2>
                 </div>
                 <div class='content'>
                     <p>Hello <strong>$name</strong>,</p>
-                    <p>Your account has been deactivated and will be permanently deleted on $deactivation_date.</p>
-                    <p>You have <strong>$days_remaining days</strong> to recover your account.</p>
-                    <p>Click the button below to recover your account immediately:</p>
-                    <p style='text-align: center; margin: 30px 0;'>
-                        <a href='$recoveryLink' class='button'>🔓 Recover My Account</a>
-                    </p>
-                    <p>Or copy and paste this link in your browser:</p>
-                    <div style='background: #eee; padding: 10px; border-radius: 5px; word-break: break-all;'>$recoveryLink</div>
-                    <p style='color: #d9534f;'><strong>⚠️ This recovery link expires in 30 days.</strong></p>
-                    <p>If you didn't deactivate your account, please recover it immediately to secure your account.</p>
-                </div>
-                <div class='footer'>
-                    <p>Need help? Contact us at enterprisesraflora@gmail.com</p>
-                    <p>&copy; " . date('Y') . " Raflora Enterprises. All rights reserved.</p>
+                    <p>Your account has been deactivated. To recover your account, you need to set a new password.</p>
+                    
+                    <div style='text-align: center; margin: 30px 0;'>
+                        <a href='$recoveryLink' class='button' style='color: white; text-decoration: none;'>🔓 Recover My Account</a>
+                    </div>
+                    
+                    <p>Or copy this link:</p>
+                    <div style='background: #f8f9fa; padding: 15px; border-radius: 5px; font-family: monospace; font-size: 12px;'>$recoveryLink</div>
+                    
+                    <p><strong>What happens next:</strong></p>
+                    <ol>
+                        <li>Click the link above</li>
+                        <li>Set a new password for your account</li>
+                        <li>Your account will be automatically reactivated</li>
+                        <li>Login with your new password</li>
+                    </ol>
+                    
+                    <p><small>This link will expire in $days_remaining days.</small></p>
                 </div>
             </div>
         </body>
