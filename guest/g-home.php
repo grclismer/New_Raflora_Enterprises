@@ -204,9 +204,9 @@
                         <a href="https://www.instagram.com/raflora18/" class="social-link">
                             <i class="fab fa-instagram"></i>
                         </a>
-                        <a href="https://www.instagram.com/raflora18/" class="social-link">
+                        <!-- <a href="https://www.instagram.com/raflora18/" class="social-link">
                             <i class="fab fa-linkedin-in"></i>
-                        </a>
+                        </a> -->
                     </div>
                 </div>
             </div>

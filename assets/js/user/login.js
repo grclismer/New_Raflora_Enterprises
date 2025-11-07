@@ -92,46 +92,38 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     console.log('Login Error:', data);
                     
-                    // In your login form handler, update the deactivated account message:
-// In your login form submission handler, update the deactivated account message:
-// In your login form handler, update the deactivated account message:
-if (data.recovery_info) {
-    const daysRemaining = data.recovery_info.days_remaining;
-    const username = document.getElementById('username').value; // Get the username
-    
-    welcomeMessageLoginDiv.innerHTML = `
-        <div style="background: #fff3cd; color: #856404; padding: 20px; border-radius: 8px; border: 1px solid #ffeaa7; margin: 15px 0;">
-            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
-                <i class="fas fa-exclamation-triangle" style="color: #856404; font-size: 1.5em;"></i>
-                <h4 style="margin: 0; color: #856404;">Account Deactivated</h4>
-            </div>
-            
-            <p style="margin: 0 0 15px 0; font-size: 1.1em;">
-                <strong>Your account has been deactivated.</strong>
-            </p>
-            
-            <p style="margin: 0 0 15px 0;">
-                You have <strong style="color: #d9534f;">${daysRemaining} days</strong> to recover your account before it's permanently deleted.
-            </p>
-            
-            <p style="margin: 0 0 15px 0;">
-                Click the button below to send a recovery link to your email.
-            </p>
-            
-            <button type="button" onclick="resendRecoveryEmail('${username}')" 
-                    style="background: #667eea; color: white; padding: 12px 30px; border: none; border-radius: 5px; font-size: 1rem; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
-                <i class="fas fa-paper-plane"></i> Send Recovery Email
-            </button>
-            
-            <!-- Add a hidden input to store the username -->
-            <input type="hidden" id="deactivatedUsername" value="${username}">
-        </div>
-    `;
-
-
-
+                    if (data.recovery_info) {
+                        const daysRemaining = data.recovery_info.days_remaining;
+                        const username = document.getElementById('username').value;
+                        
+                        welcomeMessageLoginDiv.innerHTML = `
+                            <div style="background: #fff3cd; color: #856404; padding: 20px; border-radius: 8px; border: 1px solid #ffeaa7; margin: 15px 0;">
+                                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                                    <i class="fas fa-exclamation-triangle" style="color: #856404; font-size: 1.5em;"></i>
+                                    <h4 style="margin: 0; color: #856404;">Account Deactivated</h4>
+                                </div>
+                                
+                                <p style="margin: 0 0 15px 0; font-size: 1.1em;">
+                                    <strong>Your account has been deactivated.</strong>
+                                </p>
+                                
+                                <p style="margin: 0 0 15px 0;">
+                                    You have <strong style="color: #d9534f;">${daysRemaining} days</strong> to recover your account before it's permanently deleted.
+                                </p>
+                                
+                                <p style="margin: 0 0 15px 0;">
+                                    Click the button below to send a recovery link to your email.
+                                </p>
+                                
+                                <button type="button" onclick="resendRecoveryEmail('${username}')" 
+                                        style="background: #667eea; color: white; padding: 12px 30px; border: none; border-radius: 5px; font-size: 1rem; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
+                                    <i class="fas fa-paper-plane"></i> Send Recovery Email
+                                </button>
+                                
+                                <input type="hidden" id="deactivatedUsername" value="${username}">
+                            </div>
+                        `;
                     } else {
-                        // Regular error message
                         welcomeMessageLoginDiv.textContent = data.message || 'Login failed. Please try again.';
                     }
                     
@@ -272,13 +264,54 @@ if (data.recovery_info) {
             }
         });
     }
+
+    // Forgot Password Form Handling
+    document.getElementById('forgotPasswordForm')?.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        const messageDiv = document.getElementById('forgotPasswordMessage');
+        
+        messageDiv.innerHTML = '<div class="info-message">Processing your request...</div>';
+        
+        try {
+            console.log('Sending forgot password request...');
+            
+            const response = await fetch('../api/forgot_password.php', {
+                method: 'POST',
+                body: formData
+            });
+            
+            console.log('Response received:', response);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const result = await response.json();
+            console.log('Result:', result);
+            
+            if (result.status === 'success') {
+                messageDiv.innerHTML = `<div class="success-message">${result.message}</div>`;
+                this.reset();
+            } else {
+                messageDiv.innerHTML = `<div class="error-message">${result.message}</div>`;
+            }
+        } catch (error) {
+            console.error('Fetch error:', error);
+            messageDiv.innerHTML = `<div class="error-message">Network error: ${error.message}. Please check console for details.</div>`;
+        }
+    });
 });
 
-// QR Code Scanner Functions
-let qrScanner = null;
+// =======================================================================
+// QR CODE SCANNER FUNCTIONS - MOVED TO BOTTOM
+// =======================================================================
 
 console.log("🔄 QR Scanner functions loaded");
 console.log("📚 jsQR available:", typeof jsQR !== 'undefined');
+
+let qrScanner = null;
 
 function openQRScanner() {
     console.log("🎬 Opening QR scanner...");
@@ -438,273 +471,115 @@ function handleQRFileUpload(event) {
 }
 
 async function handleScannedQR(qrData) {
-    console.log("🔍 [DEBUG] Starting QR processing...");
-    console.log("📄 QR Data received:", qrData);
+    console.log("QR Data received:", qrData);
     
     const messageDiv = document.getElementById('welcomeMessageLogin');
     
     try {
-        const qrObject = JSON.parse(qrData);
-        console.log("✅ [DEBUG] QR parsed successfully:", qrObject);
-        
-        if (qrObject.method === 'qr_login' && qrObject.system === 'raflora_enterprises') {
-            console.log("🚀 [DEBUG] Valid QR format, sending to API...");
-            
-            const apiUrl = '/raflora_enterprises/api/verify_qr_login.php';
-            console.log("📡 [DEBUG] API endpoint:", apiUrl);
-            
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({ qr_data: qrData })
-            });
-            
-            console.log("📊 [DEBUG] API Response status:", response.status);
-            
-            const responseText = await response.text();
-            console.log("📄 [DEBUG] Raw API response:", responseText);
-            
-            let result;
-            try {
-                result = JSON.parse(responseText);
-                console.log("✅ [DEBUG] API Response parsed:", result);
-            } catch (parseError) {
-                console.error("❌ [DEBUG] JSON parse error:", parseError);
-                throw new Error('Invalid server response format');
+        if (!qrData || qrData.trim() === '') {
+            throw new Error('QR code is empty');
+        }
+
+        qrData = qrData.trim();
+        let userId = null;
+
+        // Parse QR data - handle both JSON and simple number formats
+        try {
+            const qrObject = JSON.parse(qrData);
+            userId = qrObject.user_id || null;
+        } catch (e) {
+            // If not JSON, try as simple number
+            if (!isNaN(qrData)) {
+                userId = parseInt(qrData);
             }
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            if (result.status === 'success') {
-                console.log('✅ [DEBUG] Login successful!');
-                
-                if (messageDiv) {
-                    messageDiv.innerHTML = `
-                        <div style="background: #d4edda; color: #155724; padding: 10px; border-radius: 5px;">
-                            <strong>Success:</strong> Login successful! Redirecting...
-                        </div>
-                    `;
-                }
-                
-                closeQRScanner();
-                
-                setTimeout(() => {
-                    console.log("🔄 [DEBUG] Redirecting user...");
-                    if (result.user.role === 'admin_type') {
-                        window.location.href = '/raflora_enterprises/admin_dashboard/inventory.php';
-                    } else {
-                        window.location.href = '/raflora_enterprises/user/landing.php';
-                    }
-                }, 1500);
-                
-            } else {
-                console.log("❌ [DEBUG] Login failed:", result.message);
-                
-                if (messageDiv) {
-                    // In the handleScannedQR function, update the recovery button:
-if (result.recovery_info) {
-    const daysRemaining = result.recovery_info.days_remaining;
-    const userId = result.user_id || '';
-    
-    messageDiv.innerHTML = `
-        <div style="background: #fff3cd; color: #856404; padding: 20px; border-radius: 8px; border: 1px solid #ffeaa7; margin: 15px 0;">
-            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
-                <i class="fas fa-exclamation-triangle" style="color: #856404; font-size: 1.5em;"></i>
-                <h4 style="margin: 0; color: #856404;">Account Deactivated</h4>
-            </div>
-            
-            <p style="margin: 0 0 10px 0; font-size: 1.1em;">
-                <strong>Your account has been deactivated.</strong>
-            </p>
-            
-            <p style="margin: 0 0 15px 0;">
-                You have <strong style="color: #d9534f;">${daysRemaining} days</strong> to recover your account before it's permanently deleted.
-            </p>
-            
-            <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 15px 0;">
-                <p style="margin: 0 0 10px 0; font-weight: bold;">To recover your account:</p>
-                <ol style="margin: 0; padding-left: 20px;">
-                    <li>Click the button below to resend the recovery email</li>
-                    <li>Check your email inbox for the recovery link</li>
-                    <li>Click the link in the email to reactivate your account</li>
-                </ol>
-            </div>
-            
-            <button type="button" onclick="resendRecoveryEmailByUserId('${userId}')" 
-                    style="background: #667eea; color: white; padding: 12px 30px; border: none; border-radius: 5px; font-size: 1rem; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s ease;">
-                <i class="fas fa-paper-plane"></i> Resend Recovery Email
-            </button>
-            
-            <p style="margin: 15px 0 0 0; font-size: 0.9em; color: #666;">
-                <i class="fas fa-info-circle"></i> Can't find the email? Check your spam folder.
-            </p>
-        </div>
-    `;
-} else {
-                        messageDiv.innerHTML = `
-                            <div style="background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px;">
-                                <strong>Error:</strong> ${result.message || 'QR code login failed.'}
-                            </div>
-                        `;
-                    }
-                }
-            }
-        } else {
-            console.log("❌ [DEBUG] Invalid QR format for this system");
+        }
+
+        if (!userId || userId <= 0) {
+            throw new Error('Invalid QR code format');
+        }
+
+        console.log("Processing User ID:", userId);
+
+        // Show loading
+        if (messageDiv) {
+            messageDiv.innerHTML = `
+                <div style="background: #d1ecf1; color: #0c5460; padding: 15px; border-radius: 5px;">
+                    Processing QR code...
+                </div>
+            `;
+        }
+
+        const response = await fetch('/raflora_enterprises/api/verify_qr_login.php', {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ 
+                user_id: userId,
+                qr_data: qrData 
+            })
+        });
+
+        const responseText = await response.text();
+        console.log("Raw response:", responseText);
+
+        if (!responseText) {
+            throw new Error('Server returned empty response');
+        }
+
+        const result = JSON.parse(responseText);
+
+        if (result.status === 'success') {
             if (messageDiv) {
                 messageDiv.innerHTML = `
-                    <div style="background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px;">
-                        <strong>Error:</strong> This QR code is not for Raflora Enterprises login.
+                    <div style="background: #d4edda; color: #155724; padding: 10px; border-radius: 5px;">
+                        Login successful! Redirecting...
                     </div>
                 `;
             }
-        }
-    } catch (error) {
-        console.error('💥 [DEBUG] Error processing QR code:', error);
-        if (messageDiv) {
-            messageDiv.innerHTML = `
-                <div style="background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px;">
-                    <strong>Error:</strong> ${error.message}
-                </div>
-            `;
-        }
-    }
-}
-// Add this new function to handle recovery by user ID
-async function resendRecoveryEmailByUserId(userId) {
-    const messageDiv = document.getElementById('welcomeMessageLogin');
-    
-    console.log('🔍 [DEBUG] resendRecoveryEmailByUserId called with userId:', userId);
-    
-    if (!userId || userId.trim() === '') {
-        if (messageDiv) {
-            messageDiv.innerHTML = `
-                <div style="background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px;">
-                    <strong>Error:</strong> User ID not found.
-                </div>
-            `;
-        }
-        return;
-    }
-    
-    // Show loading state
-    if (messageDiv) {
-        messageDiv.innerHTML = `
-            <div style="background: #d1ecf1; color: #0c5460; padding: 15px; border-radius: 5px; display: flex; align-items: center; gap: 10px;">
-                <div class="spinner" style="width: 20px; height: 20px; border: 2px solid #f3f3f3; border-top: 2px solid #0c5460; border-radius: 50%; animation: spin 1s linear infinite;"></div>
-                <span>Sending recovery email...</span>
-            </div>
-        `;
-    }
-    
-    try {
-        console.log('📡 [DEBUG] Sending request to /raflora_enterprises/api/resend_recovery_by_id.php');
-        
-        const response = await fetch('/raflora_enterprises/api/resend_recovery_by_id.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ user_id: userId })
-        });
-        
-        console.log('📊 [DEBUG] Response status:', response.status);
-        
-        const responseText = await response.text();
-        console.log('📄 [DEBUG] Raw response:', responseText);
-        
-        let result;
-        try {
-            result = JSON.parse(responseText);
-        } catch (parseError) {
-            throw new Error('Server returned invalid JSON response');
-        }
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        if (messageDiv) {
-            if (result.status === 'success') {
+            
+            closeQRScanner();
+            
+            setTimeout(() => {
+                if (result.user.role === 'admin_type') {
+                    window.location.href = '/raflora_enterprises/admin_dashboard/inventory.php';
+                } else {
+                    window.location.href = '/raflora_enterprises/user/landing.php';
+                }
+            }, 1000);
+            
+        } else {
+            if (result.recovery_info) {
+                const daysRemaining = result.recovery_info.days_remaining;
+                const userId = result.user_id || userId;
+                
                 messageDiv.innerHTML = `
-                    <div style="background: #d4edda; color: #155724; padding: 15px; border-radius: 5px;">
-                        <strong>Success:</strong> ${result.message}
+                    <div style="background: #fff3cd; color: #856404; padding: 20px; border-radius: 8px; border: 1px solid #ffeaa7;">
+                        <h4>Account Deactivated</h4>
+                        <p>You have <strong>${daysRemaining} days</strong> to recover your account.</p>
+                        <button type="button" onclick="resendRecoveryEmailByUserId('${userId}')" 
+                                style="background: #667eea; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">
+                            Resend Recovery Email
+                        </button>
                     </div>
                 `;
             } else {
-                messageDiv.innerHTML = `
-                    <div style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px;">
-                        <strong>Error:</strong> ${result.message}
-                    </div>
-                `;
+                throw new Error(result.message || 'Login failed');
             }
         }
+        
     } catch (error) {
-        console.error('💥 [DEBUG] Recovery email error:', error);
+        console.error('QR Error:', error);
         if (messageDiv) {
             messageDiv.innerHTML = `
-                <div style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px;">
-                    <strong>Error:</strong> ${error.message}
+                <div style="background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px;">
+                    Error: ${error.message}
                 </div>
             `;
         }
     }
 }
-function showScannerMessage(message, type = 'info') {
-    const messageDiv = document.getElementById('welcomeMessageLogin');
-    if (messageDiv) {
-        messageDiv.textContent = message;
-        messageDiv.style.color = type === 'error' ? 'red' : 'green';
-        messageDiv.style.display = 'block';
-        
-        setTimeout(() => {
-            messageDiv.style.display = 'none';
-        }, 5000);
-    }
-}
-
-// Forgot Password Form Handling
-document.getElementById('forgotPasswordForm')?.addEventListener('submit', async function(e) {
-    e.preventDefault();
-    
-    const formData = new FormData(this);
-    const messageDiv = document.getElementById('forgotPasswordMessage');
-    
-    messageDiv.innerHTML = '<div class="info-message">Processing your request...</div>';
-    
-    try {
-        console.log('Sending forgot password request...');
-        
-        const response = await fetch('../api/forgot_password.php', {
-            method: 'POST',
-            body: formData
-        });
-        
-        console.log('Response received:', response);
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const result = await response.json();
-        console.log('Result:', result);
-        
-        if (result.status === 'success') {
-            messageDiv.innerHTML = `<div class="success-message">${result.message}</div>`;
-            this.reset();
-        } else {
-            messageDiv.innerHTML = `<div class="error-message">${result.message}</div>`;
-        }
-    } catch (error) {
-        console.error('Fetch error:', error);
-        messageDiv.innerHTML = `<div class="error-message">Network error: ${error.message}. Please check console for details.</div>`;
-    }
-});
 
 // Keep only this recovery function in your login.js
 async function resendRecoveryEmail(username) {
@@ -778,3 +653,34 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+
+function testQRScanner() {
+    console.log("🧪 Testing QR scanner with different formats...");
+    
+    // Test with a simple user ID (like from account settings)
+    const testUserId = 1; // Change this to a valid user ID in your system
+    handleScannedQR(testUserId.toString());
+    
+    // Or test with JSON format
+    // const testQR = JSON.stringify({
+    //     user_id: 1,
+    //     system: 'raflora_enterprises',
+    //     method: 'qr_login'
+    // });
+    // handleScannedQR(testQR);
+}
+
+
+async function testServerConnection() {
+    console.log("🧪 Testing server connection...");
+    
+    try {
+        const response = await fetch('/raflora_enterprises/api/test_simple.php');
+        const result = await response.json();
+        console.log("✅ Server test response:", result);
+        return true;
+    } catch (error) {
+        console.error("❌ Server test failed:", error);
+        return false;
+    }
+}
